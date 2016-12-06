@@ -95,23 +95,11 @@ app.directive('datetime', function () {
 				}
 		};
 })
-app.directive('select2card',function() {
-		return{
-				restrict: 'A',
-				link:function($scope, element, attrs) {
-								$(element).select2({placeholder: 'Select a VIP Number'});
-								$scope.select2part=$(element);
-								$(element).on('select2:select', function (evt) {
-										$scope.getlist('card');
-								});
-				}
-		};
-});
 app.directive('select2',function() {
 		return{
 				restrict: 'A',
 				link:function($scope, element, attrs) {
-								$(element).select2({placeholder: 'Select a Phone Number'});
+								$(element).select2({placeholder: 'Select a '+ attrs.select2 +' Number'});
 								$(element).on('select2:select', function (evt) {
 										$scope.getlist($(element).select2('val'),attrs.select2);
 								});
@@ -121,75 +109,136 @@ app.directive('select2',function() {
 app.controller('homeController', function($scope) {
     $scope.pageClass = 'page-home';
 })
-app.controller('register', function($scope) {
-	$scope.data = [
-    { name: 'Bob', title: 'CEO' },
-    { name: 'Frank', title: 'Lowly Developer' }
-  ];
+app.controller('register', function($scope,uiGridConstants,$http) {
+	var today = new Date();
+    var nextWeek = new Date();
+    nextWeek.setDate(nextWeek.getDate() + 7);
+	$scope.gridOptions = {
+		enableFiltering: true,
+		enableSorting: true,
+		columnDefs: [
+		  { field: 'card',displayName:'卡号',type:'number'},
+		  { field: 'name',displayName:'姓名',maxWidth:"100",type:'string' },
+		  { field: 'gender' ,displayName:'性别', filter: {
+			  term: '',
+			  type: uiGridConstants.filter.SELECT,
+			  selectOptions: [ { value: '男', label: '男' }, { value: '女', label: '女' }]
+		  },type:'string'},
+		  { field: 'birthday' ,displayName:'生日',type:'date'},
+		  { field: 'qq' ,displayName:'QQ/微信',type:'string'},
+		  { field: 'recently' ,displayName:'最近消费', type: 'date'},
+		],
+		onRegisterApi: function( gridApi ) {
+		  $scope.grid1Api = gridApi;
+		}
+	};
+	$http({
+		method:'post',
+		url:"register.php",
+		headers: {
+			'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+		},
+		transformRequest:function(data){
+			return $.param(data);
+		},
+		data:{
+			'opt':"getlist"
+		}
+	})
+	.then(function successCallback(response) {
+		$scope.gridOptions.data =response.data;
+	});
 	$scope.register=function(){
 		$scope.modal.modal('toggle');
 	}
 })
-app.controller('desposit', function($scope) {
-	$scope.list={
-		phone:['1111','2222','3333'],
-		card:['1111','2222','3333'],
-	}
-	$scope.getlist=function(value,type){
-		console.log('number'+value+'type:'+type);
-	}
-	$scope.result=[
-		{
-			number:'1',
-			name:'张三',
-			sex:'男',
-			phone:'2222',
-			birthday:'1992-2-2',
-			qq:'1333'
-		},{	
-			number:'2',
-			name:'李四',
-			sex:'女',
-			phone:'1111',
-			birthday:'1990-1-1',
-			qq:'a123'
+app.controller('desposit', function($scope,$http) {
+	$http({
+		method:'post',
+		url:"desposit.php",
+		headers: {
+			'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+		},
+		transformRequest:function(data){
+			return $.param(data);
+		},
+		data:{
+			'opt':"getlist",
 		}
-	]
+	})
+	.then(function successCallback(response) {
+		$scope.list={
+			phone:['1111','2222','3333'],
+			card:['1111','2222','3333'],
+		}
+	});	
+	$scope.getlist=function(value,type){
+		$http({
+			method:'post',
+			url:"desposit.php",
+			headers: {
+				'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+			},
+			transformRequest:function(data){
+				return $.param(data);
+			},
+			data:{
+				'opt':"grid",
+				'type':type,
+				'value':value
+			}
+		})
+		.then(function successCallback(response) {
+				$scope.result=response.data
+		});
+	}
 	$scope.desposit=function(card_number){
 		$scope.modal.modal('toggle');
 	}
 })
-app.controller('record', function($scope) {
-	$scope.list={
-		phone:['1111','2222','3333'],
-		card:['1111','2222','3333'],
-	}
-	$scope.getlist=function(value,type){
-		console.log('number'+value+'type:'+type);
-	}
-	$scope.result=[
-		{
-			number:'1',
-			name:'张三',
-			sex:'男',
-			phone:'2222',
-			birthday:'1992-2-2',
-			qq:'1333',
-			date:'2016-11-2 13:54',
-			operator:'A',
-			record:'5元',
-		},{	
-			number:'1',
-			name:'张三',
-			sex:'男',
-			phone:'2222',
-			birthday:'1992-2-2',
-			qq:'1333',
-			date:'2016-11-2 14:54',
-			operator:'A',
-			record:'35元',
+app.controller('record', function($scope,$http) {
+	$http({
+		method:'post',
+		url:"record.php",
+		headers: {
+			'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
 		},
-	]
+		transformRequest:function(data){
+			return $.param(data);
+		},
+		data:{
+			'opt':"getlist",
+		}
+	})
+	.then(function successCallback(response) {
+		$scope.list={
+			phone:['1111','2222','3333'],
+			card:['1111','2222','3333'],
+		}
+	});	
+	$scope.getlist=function(value,type){
+		$http({
+			method:'post',
+			url:"record.php",
+			headers: {
+				'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+			},
+			transformRequest:function(data){
+				return $.param(data);
+			},
+			data:{
+				'opt':"grid",
+				'type':type,
+				'value':value
+			}
+		})
+		.then(function successCallback(response) {
+				$scope.result=response.data
+		});
+	}
+	$scope.desposit=function(card_number){
+		$scope.modal.modal('toggle');
+	}
 })
 app.controller('manageController', function($scope) {
     $scope.pageClass = 'page-manage';
