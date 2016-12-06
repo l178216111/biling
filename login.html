@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html ng-app="myApp" >
+
+    <head>
+
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+        <title>女王美甲</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="css/reset.css">
+        <link rel="stylesheet" href="css/supersized.css">
+        <link rel="stylesheet" href="css/style.css">
+        <!-- Javascript -->
+        <script src="js/jquery-1.8.2.min.js"></script>
+        <script src="js/supersized.3.2.7.min.js"></script>
+        <script src="js/supersized-init.js"></script>
+        <script src="js/login.js"></script>
+		<script src="js/angular.min.js"></script>
+        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+            <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+    </head>
+	<style>
+		
+	</style>
+
+    <body>
+
+        <div class="page-container">
+            <h1>女王 美甲</h1>
+            <div ng-controller="login">
+				<div class='login'>
+					<input type="text" ng-model="username"  name="username" ng-keyup="fadout(username)" setfoucs="{{focus}}" class="username" placeholder="用户名">
+					<input type="password" ng-model="password"  name="password" ng-keyup="fadout(password)" setfoucs="{{focus}}" class="password" placeholder="密码">
+					<button  ng-click="submit()">登入</button>
+					<div class="error"  ng-hide="error_hide" ng-style="error_top"><span>+</span></div>
+				</div>
+            </div>
+        </div>
+
+    </body>
+
+</html>
+

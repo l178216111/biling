@@ -1,0 +1,40 @@
+<div class="col-md-10 col-md-offset-1" ng-controller="record">
+	<div class="col-md-3">
+		<select select2='card' style="width: 100%">
+				<option disabled selected value></option>
+				<option ng-repeat="x in list.card">{{x}}</option>
+		</select>
+	</div>
+	<div class="col-md-3">
+		<select select2='phone' style="width: 100%">
+				<option disabled selected value></option>
+				<option ng-repeat="x in list.phone" >{{x}}</option>
+		</select>
+	</div>
+	<div style="padding-top:20px">
+		<table class="table table-bordered text-center table-hover" style="table-layout:fixed;">
+			<tr>
+				<th class="text-center">卡号</th>
+				<th class="text-center">姓名</th>
+				<th class="text-center">性别</th>
+				<th class="text-center">手机号</th>
+				<th class="text-center">生日</th>
+				<th class="text-center">QQ/微信</th>
+				<th class="text-center">时间</th>
+				<th class="text-center">技师</th>
+				<th class="text-center">消费</th>
+			</tr>
+			<tr ng-repeat="x in result" >
+					<td>{{x.number}}</td>
+					<td>{{x.name}}</td>
+					<td>{{x.sex}}</td>
+					<td>{{x.phone}}</td>
+					<td>{{x.birthday}}</td>
+					<td>{{x.qq}}</td>
+					<td>{{x.date}}</td>
+					<td>{{x.operator}}</td>
+					<td>{{x.record}}</td>
+			</tr>
+		</table>
+	</div>
+</div>

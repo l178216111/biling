@@ -1,0 +1,41 @@
+html         { overflow-y:hidden; }
+.page        { 
+	bottom:0; 
+	padding-top:200px;
+	position:absolute; 
+	top:0;  
+	width:100%; 
+}
+
+.heading {position:absolute;z-index:3;margin: auto;left: 0; right: 0;}
+.page.ng-leave 	{ z-index:2; }
+.page.ng-enter 	{ z-index:1; }
+
+
+
+/*.page-home { background-image:url(../img/backgrounds/2.jpg);background-position:center);background-size:cover} */
+/* page specific animations ------------------------ */
+
+.page.ng-leave {
+	-webkit-animation: moveToBottom .6s ease both;
+	animation: moveToBottom .6s ease both;
+}
+.page.ng-enter {
+	-webkit-animation: moveFromTop .6s ease both;
+	animation: moveFromTop .6s ease both;
+}
+@-webkit-keyframes moveFromTop {
+	from { -webkit-transform: translateY(-100%); }
+}
+@keyframes moveFromTop {
+	from { -webkit-transform: translateY(-100%); transform: translateY(-100%); }
+}
+
+@-webkit-keyframes moveToBottom {
+	from { }
+	to { -webkit-transform: translateY(100%); }
+}
+@keyframes moveToBottom {
+	from { }
+	to { -webkit-transform: translateY(100%); transform: translateY(100%); }
+}

@@ -1,0 +1,69 @@
+<div class="col-md-10 col-md-offset-1" ng-controller="desposit">
+	<div class="col-md-3">
+		<select select2='card' style="width: 100%">
+				<option disabled selected value></option>
+				<option ng-repeat="x in list.card">{{x}}</option>
+		</select>
+	</div>
+	<div class="col-md-3">
+		<select select2='phone' style="width: 100%">
+				<option disabled selected value></option>
+				<option ng-repeat="x in list.phone" >{{x}}</option>
+		</select>
+	</div>
+	<div style="padding-top:20px">
+		<table class="table table-bordered text-center table-hover" style="table-layout:fixed;">
+			<tr>
+				<th class="text-center">卡号</th>
+				<th class="text-center">姓名</th>
+				<th class="text-center">性别</th>
+				<th class="text-center">手机号</th>
+				<th class="text-center">生日</th>
+				<th class="text-center">QQ/微信</th>
+				<th class="text-center">操作</th>
+			</tr>
+			<tr ng-repeat="x in result" >
+					<td>{{x.number}}</td>
+					<td>{{x.name}}</td>
+					<td>{{x.sex}}</td>
+					<td>{{x.phone}}</td>
+					<td>{{x.birthday}}</td>
+					<td>{{x.qq}}</td>
+					<td>
+							<button type="button" class="ladda-button btn btn-primary" data-style="zoom-in" ng-click="desposit($number)" >
+								<span class="ladda-label">充值</span>
+							</button>
+					</td>
+			</tr>
+		</table>
+	</div>
+	 <div class="modal fade" tabindex="-1" style='margin: 0 auto' role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" modal>
+		   <div class="modal-dialog">
+				  <div class="modal-content">
+						 <div class="modal-header">
+								<button type="button" class="close" 
+								   data-dismiss="modal" aria-hidden="true">
+										  &times;
+								</button>
+								<h4 class="modal-title">
+										充值会员
+								</h4>
+						 </div>
+						 <div class="modal-body">
+							<form name="form" id="form_add">
+								<div class="input-group col-md-3">
+									<span class="input-group-addon">金额:</span>
+									<input type="text" class="form-control" ng-model="money">
+								</div>
+							</form>
+						 </div>
+						 <div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+								<button type="button" id="modal_add" class="btn btn-primary" ng-disabled="!money">
+									 <span class="ladda-label">充值</span>
+								</button>
+						 </div>
+				</div>
+		</div>
+  </div>
+</div>

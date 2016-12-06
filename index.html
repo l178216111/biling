@@ -1,0 +1,45 @@
+<!doctype html>
+<html ng-app="myApp">
+ <head>
+  <meta  charset="utf-8">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title></title>
+	<!-- CSS -->
+	<link rel="stylesheet" href="css/index.css">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link href="css/select2.min.css" type="text/css" rel="stylesheet">
+	<link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen">
+	<!-- Javascript -->
+	<script src="js/jquery-2.0.0.min.js"></script>
+	<script src="js/angular.min.js"></script>
+	<script src="js/angular-ui-router.min.js"></script>
+	<script src="js/angular-animate.min.js"></script>
+	<script src='js/bootstrap.min.js'></script>
+	<script type="text/javascript" src="./js/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
+	<script type="text/javascript" src="./js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+	<script type="text/javascript" src="./js/moment.min.js"></script>
+	<script src="js/select2.full.min.js"></script>
+	<script src="js/index.js"></script>
+
+ </head>
+ <body  >
+	<div class="container heading">
+		<div class="page-header text-center">
+			<h2>欢迎来到女王美甲</h2>
+		</div>
+		<nav class="navbar navbar-default" role="navigation">
+			<ul class="nav navbar-nav container">
+				<li class="col-md-3" ui-sref-active="active" ><a class="text-center"  ui-sref="home" >收费</a></li>
+				<li class="col-md-3" ui-sref-active="active" ><a class="text-center"  ui-sref="vip" >会员管理</a></li>                            
+				<li class="col-md-3" ui-sref-active="active" ><a class="text-center"  ui-sref="manage" >项目管理</a></li>
+				<li class="col-md-3" ui-sref-active="active" ><a class="text-center"  ui-sref="admin" >管理员</a></li>
+			</ul>
+		</nav>
+	</div>
+	<div  class="page {{ pageClass }}" ui-view ></div>
+ </body>
+</html>
