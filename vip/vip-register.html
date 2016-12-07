@@ -47,9 +47,20 @@
 									<span class="input-group-addon"><span class="glyphicon glyphicon-th"></span>
 									</div>
 								</div>
-								<div class="input-group col-md-6 ">
+								<div class="input-group col-md-6 pull-right">
 									<span class="input-group-addon">QQ/微信:</span>
 									<input type="text" class="form-control" ng-model="input.qq"  >
+								</div>
+								<div class="input-group col-md-6 pull-left">
+									<span class="input-group-addon">充值:</span>
+									<input type="text" class="form-control" ng-model="input.price"  >
+								</div>
+								<div class="input-group col-md-6 ">
+									<span class="input-group-addon">会员等级:</span>
+									<select  class="form-control" ng-model="input.rank" >
+											<option value="A">A</option>
+											<option value="B">B</option>
+									</select>
 								</div>
 							</form>
 							</div>

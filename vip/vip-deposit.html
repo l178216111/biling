@@ -16,6 +16,7 @@
 			<tr>
 				<th class="text-center">卡号</th>
 				<th class="text-center">姓名</th>
+				<th class="text-center">等级</th>
 				<th class="text-center">性别</th>
 				<th class="text-center">手机号</th>
 				<th class="text-center">生日</th>
@@ -25,6 +26,7 @@
 			<tr ng-repeat="x in result" >
 					<td>{{x.number}}</td>
 					<td>{{x.name}}</td>
+					<td>{{x.rank}}</td>
 					<td>{{x.sex}}</td>
 					<td>{{x.phone}}</td>
 					<td>{{x.birthday}}</td>
@@ -51,9 +53,16 @@
 						 </div>
 						 <div class="modal-body">
 							<form name="form" id="form_add">
-								<div class="input-group col-md-3">
+								<div class="input-group col-md-3 pull-left">
 									<span class="input-group-addon">金额:</span>
 									<input type="text" class="form-control" ng-model="money">
+								</div>
+								<div class="input-group col-md-3 ">
+									<span class="input-group-addon">变更等级:</span>
+									<select  class="form-control" ng-model="input.rank" >
+											<option value="A">A</option>
+											<option value="B">B</option>
+									</select>
 								</div>
 							</form>
 						 </div>

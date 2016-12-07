@@ -1,9 +1,14 @@
-<div>
+<div ng-controller="homeController">
 	<form class='form-inline col-md-10 col-md-offset-2' role="form">
 		<div class="col-md-12">
-			<div class="input-group ">
+			<div class="input-group">
 				<span class="input-group-addon">会员卡号:</span>
-				<input type="text" class="form-control" placeholder="请输入卡号">
+				<select select2="card" style="width:250px" >
+							<option disabled selected value></option>
+							<option >临时卡</option>
+							<option >1111111</option>
+							<option >222222222</option>
+				</select>
 			</div>
 		</div>
 		<h3 class="col-md-12">会员信息：</h3>
@@ -17,38 +22,52 @@
 					<input type="text" class="form-control" disabled>
 				</div>
 				<div class="input-group col-md-3">
+					<span class="input-group-addon">生日:</span>
+					<input type="text" class="form-control" disabled>
+				</div>
+				<div class="input-group col-md-3">
+					<span class="input-group-addon">QQ/微信:</span>
+					<input type="text" class="form-control" disabled>
+				</div>
+				<div class="input-group col-md-3">
+					<span class="input-group-addon">会员等级:</span>
+					<input type="text" class="form-control" disabled>
+				</div>
+				<div class="input-group col-md-3">
 					<span class="input-group-addon">余额:</span>
 					<input type="text" class="form-control" disabled>
 				</div>
 			</div>
 		<h3 class="col-md-12">消费信息：</h3>
 		<div class="col-md-12">
-			<div class="input-group col-md-2">
-				<span class="input-group-addon">消费</span>
-				<input type="text" class="form-control" placeholder="**元">
-			</div>
-			<div class="input-group col-md-2">
-				<span class="input-group-addon">项目</span>
-				<select id="platform" name="platform" class="form-control  ">
-						<option value="J750">美甲</option>
-				</select>
-			</div>
-			<div class="input-group col-md-2">
-				<span class="input-group-addon">折扣</span>
-				<select  class="form-control  ">
-						<option value="J750">7折</option>
-						<option value="MST">8折</option>
-						<option value="IFLEX">9折</option>
-				</select>
-			</div>
-			<div class="input-group col-md-2">
-				<span class="input-group-addon">共计:</span>
-				<input type="text" class="form-control" disabled>
+			<div class="input-group" style="height:34px;">
+					<span class="input-group-addon">项目:</span>
+					<select select2="project" class="js-example-basic-multiple" style="width:900px" multiple="multiple">
+							<option ng-repeat="x in project">{{x}}</option>
+					</select>
 			</div>
 		</div>
+		<div class="col-md-12">
+				<div class="col-md-4 input-group">
+					<span class="input-group-addon">技师:</span>
+					<select select2="operator" style="width: 250px;" >
+							<option disabled selected value></option>
+							<option >A</option>
+					</select>
+				</div>
+		</div>		
+		<h3 class="col-md-12">总览：</h3>
+		<div class="col-md-12">
+				<div class="input-group">
+					<span class="input-group-addon">共计:</span>
+					<input type="text" class="form-control" disabled>
+					<span class="input-group-addon">元</span>
+				</div>
+		</div>
+
 	</form>
 	<div class="text-center" style="padding-top:300px;" >
-				<button type="button"class="ladda-button btn btn-primary" data-style="zoom-in">
+				<button type="button"class="ladda-button btn btn-primary" data-style="zoom-in" ng-click="submit2()" ng-disabled="!input.project||!input.operator||!input.card">
 						<span class="ladda-label">确认</span>
 				</button>
 				<button type="button"  class="btn btn-success">取消</button>

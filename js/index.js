@@ -12,7 +12,7 @@ app.config(function($stateProvider,$urlRouterProvider) {
 		name:'home',
 		url:'/home',
 		templateUrl:'page-home.html',
-		controller:'homeController'
+	//	controller:'homeController'
 	},{
 		name:'vip',
 		url:'/vip',
@@ -99,15 +99,32 @@ app.directive('select2',function() {
 		return{
 				restrict: 'A',
 				link:function($scope, element, attrs) {
-								$(element).select2({placeholder: 'Select a '+ attrs.select2 +' Number'});
-								$(element).on('select2:select', function (evt) {
+								$(element).select2({placeholder: 'Select a '+ attrs.select2 });
+								if (attrs.select2 =='project'){
+									$(element).select2({closeOnSelect: false});
+								}
+								$(element).on('change', function (evt) {
 										$scope.getlist($(element).select2('val'),attrs.select2);
 								});
 				}
 		};
 });
 app.controller('homeController', function($scope) {
+	$scope.input={
+		operator:"",
+		project:"",
+		card:""
+	};
     $scope.pageClass = 'page-home';
+	$scope.project=['E','D','C','B','A',];
+	$scope.getlist=function(value,type){
+			$scope.$apply(function(){
+			$scope.input[type]=value;
+			console.log($scope.input[type]);
+		})
+	}
+	$scope.submit2=function(){
+	}
 })
 app.controller('register', function($scope,uiGridConstants,$http) {
 	var today = new Date();
@@ -119,6 +136,7 @@ app.controller('register', function($scope,uiGridConstants,$http) {
 		columnDefs: [
 		  { field: 'card',displayName:'卡号',type:'number'},
 		  { field: 'name',displayName:'姓名',maxWidth:"100",type:'string' },
+		  { field: 'rank',displayName:'等级',maxWidth:"100",type:'string' },
 		  { field: 'gender' ,displayName:'性别', filter: {
 			  term: '',
 			  type: uiGridConstants.filter.SELECT,
