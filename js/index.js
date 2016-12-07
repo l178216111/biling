@@ -73,7 +73,7 @@ app.directive('modal', function () {
 		return {
 				restrict: 'A',
 				link: function($scope,element, attr) {
-						$scope.modal=$(element);
+						$scope[attr.modal]=$(element);
 //						console.log($scope.modal);
 				}
 		};
@@ -167,7 +167,7 @@ app.controller('register', function($scope,uiGridConstants,$http) {
 		$scope.gridOptions.data =response.data;
 	});
 	$scope.register=function(){
-		$scope.modal.modal('toggle');
+		$scope.add.modal('toggle');
 	}
 })
 app.controller('desposit', function($scope,$http) {
@@ -263,4 +263,24 @@ app.controller('manageController', function($scope) {
 })
 app.controller('adminController', function($scope) {
     $scope.pageClass = 'page-admin';
+})
+app.controller('project', function($scope) {
+	$scope.result=[{
+		project:'美甲',
+		price:'10',
+		intrduce:'好玩吗'
+	}]
+    $scope.operate=function(operate,value){
+		console.log(value);
+		$scope[operate].modal('toggle');
+	}
+	$scope.add=function(){
+		
+	}
+	$scope.modify=function(){
+		
+	}
+	$scope.delete=function(){
+		
+	}
 })

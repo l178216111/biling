@@ -1,5 +1,128 @@
-<div>
-     <div>
-         <h1>progect content goes here...</h1>
-     </div>
+<div class="col-md-10 col-md-offset-1" ng-controller="project">
+	<div class="text-center pull-left" style="padding-top:12px">
+			<button type="button" class="ladda-button btn btn-primary" data-style="zoom-in" ng-click="operate('add')">
+					<span class="ladda-label">新增项目</span>
+			</button>
+	</div>
+	<div style="padding-top:20px">
+		<table class="table table-bordered text-center table-hover" style="table-layout:fixed;">
+			<tr>
+				<th class="text-center" style="width:20%">项目</th>
+				<th class="text-center" style="width:15%" >价钱</th>
+				<th class="text-center" style="width:25%" >介绍</th>
+				<th class="text-center" style="width:20%" >操作</th>
+			</tr>
+			<tr ng-repeat="x in result" >
+					<td >{{x.project}}</td>
+					<td >{{x.price}}</td>
+					<td >{{x.introduce}}</td>
+					<td >
+							<button type="button" class="ladda-button btn btn-success" data-style="zoom-in" ng-click="operate('modify',$index)" >
+								<span class="ladda-label">修改</span>
+							</button>
+							<button type="button" class="ladda-button btn btn-warning" data-style="zoom-in" ng-click="operate('delete',$index)" >
+								<span class="ladda-label">删除</span>
+							</button>
+					</td>
+			</tr>
+		</table>
+	</div>
+   <div class="modal fade" tabindex="-1" style='margin: 0 auto' role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" modal="add">
+		   <div class="modal-dialog">
+				  <div class="modal-content">
+						 <div class="modal-header">
+								<button type="button" class="close" 
+								   data-dismiss="modal" aria-hidden="true">
+										  &times;
+								</button>
+								<h4 class="modal-title">
+										新增项目
+								</h4>
+						 </div>
+						 <div class="modal-body">
+							<form name="myform">
+								<div class="input-group col-md-6 pull-left">
+									<span class="input-group-addon">名称:</span>
+									<input type="text" class="form-control" ng-model="add.project"  >
+								</div>
+								<div class="input-group col-md-6 pull-right">
+									<span class="input-group-addon">价钱:</span>
+									<input type="text" class="form-control" ng-model="add.price"  >
+								</div>
+								<div class="input-group col-md-6">
+									<span class="input-group-addon">介绍:</span>
+									<input  type="text" class="form-control"  ng-model="add.introduce" >
+								</div>
+							</form>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+								<button type="button" class="btn btn-primary" ng-disabled="!add.project||!add.price" ng-click="add()">
+									 <span class="ladda-label">确定</span>
+								</button>	
+						 </div>
+				</div>
+		</div>
+  </div>
+     <div class="modal fade" tabindex="-1" style='margin: 0 auto' role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" modal="modify">
+		   <div class="modal-dialog">
+				  <div class="modal-content">
+						 <div class="modal-header">
+								<button type="button" class="close" 
+								   data-dismiss="modal" aria-hidden="true">
+										  &times;
+								</button>
+								<h4 class="modal-title">
+										修改项目
+								</h4>
+						 </div>
+						 <div class="modal-body">
+							<form name="myform">
+								<div class="input-group col-md-6 pull-left">
+									<span class="input-group-addon">名称:</span>
+									<input type="text" class="form-control" ng-model="modify.project"  >
+								</div>
+								<div class="input-group col-md-6 pull-right">
+									<span class="input-group-addon">价钱:</span>
+									<input type="text" class="form-control" ng-model="modify.price"  >
+								</div>
+								<div class="input-group col-md-6">
+									<span class="input-group-addon">介绍:</span>
+									<input  type="text" class="form-control"  ng-model="modify.introduce" >
+								</div>
+							</form>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+								<button type="button" class="btn btn-primary" ng-click="modify()" ng-disabled="!modify.project&&!modify.price&&!modify.introduce">
+									 <span class="ladda-label">确定</span>
+								</button>	
+						 </div>
+				</div>
+		</div>
+  </div>
+     <div class="modal fade" tabindex="-1" style='margin: 0 auto' role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" modal="delete">
+		   <div class="modal-dialog">
+				  <div class="modal-content">
+						 <div class="modal-header">
+								<button type="button" class="close" 
+								   data-dismiss="modal" aria-hidden="true">
+										  &times;
+								</button>
+								<h6 class="modal-title">
+										删除项目
+								</h6>
+						 </div>
+						 <div class="modal-body">
+								<h3>确定删除此项目吗？</h3>
+						 </div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+								<button type="button" class="btn btn-primary" ng-click="delete()">
+									 <span class="ladda-label">确定</span>
+								</button>	
+						 </div>
+				</div>
+		</div>
+  </div>
 </div>
