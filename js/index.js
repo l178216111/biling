@@ -1,5 +1,5 @@
 
-var app=angular.module('myApp',['ui.router','ngAnimate','ui.grid']);
+var app=angular.module('myApp',['ui.router','ngAnimate','ui.grid','ui.grid.edit']);
 app.run(function($rootScope, $location,$state) {
 	$rootScope.$on('$stateChangeStart', function(event, toState, toStateParams) {
 		if (toState.name=='manage'  ){
@@ -281,6 +281,32 @@ app.controller('project', function($scope) {
 		
 	}
 	$scope.delete=function(){
+		
+	}
+})
+app.controller('free', function($scope) {
+	$scope.gridOptions = {  };
+	$scope.columnDefs=[{name:'等级', enableCellEdit: false}];
+	var arr = new Array();
+	arr=[{name:'美甲'},{name:'美睫'}];
+	$scope.columnDefs=$scope.columnDefs.concat(arr);
+	console.log($scope.columnDefs);
+	$scope.gridOptions.columnDefs = $scope.columnDefs;
+
+    $scope.operate=function(operate,value){
+		$scope[operate].modal('toggle');
+	}
+	 $scope.msg = {};
+	 $scope.gridOptions.onRegisterApi = function(gridApi){
+          //set gridApi on scope
+          $scope.gridApi = gridApi;
+          gridApi.edit.on.afterCellEdit($scope,function(rowEntity, colDef, newValue, oldValue){
+            $scope.msg.lastCellEdited = 'edited row id:' + rowEntity.id + ' Column:' + colDef.name + ' newValue:' + newValue + ' oldValue:' + oldValue ;
+            $scope.$apply();
+          });
+    };
+	$scope.gridOptions.data =[{'等级':'A','美甲':'0.7','美睫':'1'}];
+	$scope.add=function(){
 		
 	}
 })
