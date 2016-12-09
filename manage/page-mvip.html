@@ -1,20 +1,18 @@
-<div class="col-md-10 col-md-offset-1" ng-controller="project">
+<div class="col-md-10 col-md-offset-1" ng-controller="mvip">
 	<div class="text-center pull-left" style="padding-top:12px">
 			<button type="button" class="ladda-button btn btn-primary" data-style="zoom-in" ng-click="operate('_add')">
-					<span class="ladda-label">新增项目</span>
+					<span class="ladda-label">新增会员</span>
 			</button>
 	</div>
 	<div style="padding-top:20px;width:1070px;height:400px;overflow-y:scroll">
 		<table class="table table-bordered text-center table-hover" style="table-layout:fixed;">
 			<tr>
 				<th class="text-center" style="width:20%">项目</th>
-				<th class="text-center" style="width:15%" >价钱</th>
 				<th class="text-center" style="width:25%" >介绍</th>
 				<th class="text-center" style="width:20%" >操作</th>
 			</tr>
 			<tr ng-repeat="x in result" >
 					<td >{{x.project}}</td>
-					<td >{{x.price}}</td>
 					<td >{{x.introduce}}</td>
 					<td >
 							<button type="button" class="ladda-button btn btn-success" data-style="zoom-in" ng-click="operate('_modify',$index)" >
@@ -36,7 +34,7 @@
 										  &times;
 								</button>
 								<h4 class="modal-title">
-										新增项目
+										新增会员
 								</h4>
 						 </div>
 						 <div class="modal-body">
@@ -44,10 +42,6 @@
 								<div class="input-group col-md-6 pull-left">
 									<span class="input-group-addon">名称:</span>
 									<input type="text" class="form-control" ng-model="modal_add.project"  >
-								</div>
-								<div class="input-group col-md-6 pull-right">
-									<span class="input-group-addon">价钱:</span>
-									<input type="text" class="form-control" ng-model="modal_add.price"  >
 								</div>
 								<div class="input-group col-md-6">
 									<span class="input-group-addon">介绍:</span>
@@ -57,7 +51,7 @@
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
-								<button type="button" class="btn btn-primary" ng-disabled="!modal_add.project||!modal_add.price||!modal_add.introduce" ng-click="modal_operate('_add',dataindex)">
+								<button type="button" class="btn btn-primary" ng-disabled="!modal_add.project||!modal_add.introduce" ng-click="modal_operate('_add',dataindex)">
 									 <span class="ladda-label">确定</span>
 								</button>	
 						 </div>
@@ -82,10 +76,6 @@
 									<span class="input-group-addon">名称:</span>
 									<input type="text" class="form-control" ng-model="modal_modify.project" placeholder="{{result[dataindex].project}}" >
 								</div>
-								<div class="input-group col-md-6 pull-right">
-									<span class="input-group-addon">价钱:</span>
-									<input type="text" class="form-control" ng-model="modal_modify.price" placeholder="{{result[dataindex].price}}" >
-								</div>
 								<div class="input-group col-md-6">
 									<span class="input-group-addon">介绍:</span>
 									<input  type="text" class="form-control"  ng-model="modal_modify.introduce" placeholder="{{result[dataindex].introduce}}" >
@@ -94,14 +84,14 @@
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
-								<button type="button" class="btn btn-primary" ng-click="modal_operate('_modify',dataindex)" ng-disabled="!modal_modify.project&&!modal_modify.price&&!modal_modify.introduce">
+								<button type="button" class="btn btn-primary" ng-click="modal_operate('_modify',dataindex)" ng-disabled="!modal_modify.project&&!modal_modify.introduce">
 									 <span class="ladda-label">确定</span>
 								</button>	
 						 </div>
 				</div>
 		</div>
   </div>
-    <div class="modal fade" tabindex="-1" style='margin: 0 auto' role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" modal="_delete">
+     <div class="modal fade" tabindex="-1" style='margin: 0 auto' role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" modal="_delete">
 		   <div class="modal-dialog">
 				  <div class="modal-content">
 						 <div class="modal-header">
@@ -110,11 +100,11 @@
 										  &times;
 								</button>
 								<h6 class="modal-title">
-										删除项目
+										删除会员
 								</h6>
 						 </div>
 						 <div class="modal-body">
-								<h3>确定删除此项目吗？</h3>
+								<h3>确定删除此会员吗？</h3>
 						 </div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
@@ -125,7 +115,7 @@
 				</div>
 		</div>
   </div>
-  <div class="modal fade" tabindex="-1" style='margin: 0 auto' role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" modal="_error">
+   <div class="modal fade" tabindex="-1" style='margin: 0 auto' role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" modal="_error">
 	   <div class="modal-dialog">
 			  <div class="modal-content">
 					 <div class="modal-header">

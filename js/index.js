@@ -50,6 +50,11 @@ app.config(function($stateProvider,$urlRouterProvider) {
 		templateUrl: 'manage/page-operator.html',
 	//	controller: 'manageController'
 	},{
+		name:'manage.mvip', 
+		url:'/mvip',
+		templateUrl: 'manage/page-mvip.html',
+	//	controller: 'manageController'
+	},{
 		name:'admin',
 		url:'/admin',
 		templateUrl: 'page-admin.html',
@@ -264,24 +269,115 @@ app.controller('manageController', function($scope) {
 app.controller('adminController', function($scope) {
     $scope.pageClass = 'page-admin';
 })
-app.controller('project', function($scope) {
-	$scope.result=[{
-		project:'美甲',
-		price:'10',
-		intrduce:'好玩吗'
-	}]
+app.controller('project', function($scope,$http) {
+	$http({
+		method:'post',
+		url:"php/project.php",
+		headers: {
+			'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+		},
+		transformRequest:function(data){
+			return $.param(data);
+		},
+		data:{
+			'opt':"getproject",
+			'data':'',
+			'index':'',
+		}
+	})
+	.then(function successCallback(response) {
+		$scope.result =response.data.result;
+		if (response.data.error!=0){
+			$scope['_error'].modal('toggle');
+		}
+	});
     $scope.operate=function(operate,value){
-		console.log(value);
+//		console.log(operate);
+		$scope.dataindex=value;
 		$scope[operate].modal('toggle');
 	}
-	$scope.add=function(){
-		
+	$scope.modal_operate=function(type,index){
+			$scope[type].modal('toggle');
+			var data_type="modal"+type;
+			$http({
+				method:'post',
+				url:"php/project.php",
+				headers: {
+					'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+				},
+				transformRequest:function(data){
+					return $.param(data);
+				},
+				data:{
+					'opt':type,
+					'data':$scope[data_type],
+					'index':$scope.result[index]
+				}
+			})
+			.then(function successCallback(response) {
+				if (response.data.error!=0){				
+					$scope.msg=response.data.error;
+					$scope['_error'].modal('toggle');
+				}
+				$scope[data_type]="";
+				$scope.result =response.data.result;
+			});
 	}
-	$scope.modify=function(){
-		
+})
+app.controller('mvip', function($scope,$http) {
+	$http({
+		method:'post',
+		url:"php/mvip.php",
+		headers: {
+			'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+		},
+		transformRequest:function(data){
+			return $.param(data);
+		},
+		data:{
+			'opt':"getproject",
+			'data':'',
+			'index':'',
+		}
+	})
+	.then(function successCallback(response) {
+		if (response.data.error==0){
+			$scope.result =response.data.result;
+		}else{
+			alert(response.data.error);
+		}
+	});
+    $scope.operate=function(operate,value){
+//		console.log(operate);
+		$scope.dataindex=value;
+		$scope[operate].modal('toggle');
 	}
-	$scope.delete=function(){
-		
+	$scope.modal_operate=function(type,index){
+			$scope[type].modal('toggle');
+			var data_type="modal"+type;
+			$http({
+				method:'post',
+				url:"php/mvp.php",
+				headers: {
+					'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+				},
+				transformRequest:function(data){
+					return $.param(data);
+				},
+				data:{
+					'opt':type,
+					'data':$scope[data_type],
+					'index':$scope.result[index]
+				}
+			})
+			.then(function successCallback(response) {
+				if (response.data.error==0){
+					$scope.result =response.data.result;
+					$scope[data_type]="";
+				}else{
+					alert(response.data.error);
+				}
+			});
 	}
 })
 app.controller('free', function($scope) {
