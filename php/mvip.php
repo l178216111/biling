@@ -23,13 +23,13 @@ function getproject(){
 	$conn=mysql_connect($mysql['server_name'],$mysql['username'],$mysql['password']) or die("error connecting"); //连接数据库
 	mysql_query("set names 'utf8'");
 	mysql_select_db($mysql['database'],$conn);
-	$sql="select project,price,introduce from project";
+	$sql="select project,introduce from vip";
 	$result = mysql_query($sql);
 //	var_dump($result);
 	if( mysql_num_rows($result)) {
-		while($row = mysql_fetch_array($result)){
-			$row_tmp=array('project'=>$row['project'],'price'=>$row['price'],'introduce'=>$row['introduce']);
-			array_push($array,$row_tmp);
+		while($row = mysql_fetch_array($result,MYSQL_ASSOC)){
+//			$row_tmp=array('project'=>$row['project'],'introduce'=>$row['introduce']);
+			array_push($array,$row);
 		}
 	}else{
 		mysql_error();
@@ -44,14 +44,15 @@ function addproject($data){
 	mysql_select_db($mysql['database'],$conn);
 	mysql_query('START TRANSACTION');
 	$isBad = 0;
-	$ins_table_project = "INSERT INTO project(project,introduce) VALUES ('".$data['project']."','".$data['introduce']."')";
-	//echo $ins_table_project;
-	if(!mysql_query($ins_table_project)){
-	  $isBad =mysql_error();
-	}
-	$ins_table_free="alter table free add  column ".$data['project']." varchar(100)  default 1";
+	$ins_table_free = "INSERT INTO free(rank) VALUES ('".$data['project']."')";
 	if(!mysql_query($ins_table_free)){
 	  $isBad =mysql_error();
+	}else{
+		$ins_table_project = "INSERT INTO vip(project,introduce) VALUES ('".$data['project']."','".$data['introduce']."')";
+		//echo $ins_table_project;
+		if(!mysql_query($ins_table_project)){
+		  $isBad =mysql_error();
+		}
 	}
 	if($isBad !== 0){
 //			echo $isBad;
@@ -70,15 +71,16 @@ function deleteproject($data,$index){
 	mysql_select_db($mysql['database'],$conn);
 	mysql_query('START TRANSACTION');
 	$isBad = 0;
-	$where=sql_string($index,'where');
-	$ins_table_project = "DELETE FROM project WHERE $where";
-//	echo $ins_table_project;
-	if(!mysql_query($ins_table_project)){
-	  $isBad =mysql_error();
-	}
-	$ins_table_free="alter table free drop column ".$index['project'];
+	$ins_table_free="DELETE FROM free WHERE rank='".$index['project']."'";
 	if(!mysql_query($ins_table_free)){
 	  $isBad =mysql_error();
+	}else{
+		$where=sql_string($index,'where');
+		$ins_table_project = "DELETE FROM vip WHERE $where";
+	//	echo $ins_table_project;
+		if(!mysql_query($ins_table_project)){
+		  $isBad =mysql_error();
+		}
 	}
 	if($isBad !== 0){
 //		echo $isBad;
@@ -100,18 +102,19 @@ function modifyproject($data,$index){
 	$isBad = 0;
 	if ( array_key_exists('project',$data)){
 //		echo "project";
-		$ins_table_free="alter table free change ".$index['project']." ".$data['project']." varchar(1000) not null";
+		$ins_table_free="UPDATE free SET rank='".$data['project']."' WHERE rank='".$index['project']."'";
 //		echo $ins_table_free;
 		if(!mysql_query($ins_table_free)){
 		  $isBad =mysql_error();
-		}else{
-				$set=sql_string($data,'set');
-				$where=sql_string($index,'where');
-				$ins_table_project = "UPDATE project SET $set  WHERE $where";
-			//	echo $ins_table_project;
-				if(!mysql_query($ins_table_project)){
-				  $isBad =mysql_error();
-				}
+		}
+	}
+	if($isBad == 0){
+		$set=sql_string($data,'set');
+		$where=sql_string($index,'where');
+		$ins_table_project = "UPDATE vip SET $set  WHERE $where";
+	//	echo $ins_table_project;
+		if(!mysql_query($ins_table_project)){
+		  $isBad =mysql_error();
 		}
 	}
 	if($isBad !== 0){

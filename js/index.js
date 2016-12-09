@@ -341,10 +341,9 @@ app.controller('mvip', function($scope,$http) {
 		}
 	})
 	.then(function successCallback(response) {
-		if (response.data.error==0){
-			$scope.result =response.data.result;
-		}else{
-			alert(response.data.error);
+		$scope.result =response.data.result;
+		if (response.data.error!=0){
+			$scope['_error'].modal('toggle');
 		}
 	});
     $scope.operate=function(operate,value){
@@ -357,7 +356,7 @@ app.controller('mvip', function($scope,$http) {
 			var data_type="modal"+type;
 			$http({
 				method:'post',
-				url:"php/mvp.php",
+				url:"php/mvip.php",
 				headers: {
 					'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
 				},
@@ -371,38 +370,113 @@ app.controller('mvip', function($scope,$http) {
 				}
 			})
 			.then(function successCallback(response) {
-				if (response.data.error==0){
-					$scope.result =response.data.result;
-					$scope[data_type]="";
-				}else{
-					alert(response.data.error);
+				if (response.data.error!=0){				
+					$scope.msg=response.data.error;
+					$scope['_error'].modal('toggle');
 				}
+				$scope[data_type]="";
+				$scope.result =response.data.result;
 			});
 	}
 })
-app.controller('free', function($scope) {
-	$scope.gridOptions = {  };
-	$scope.columnDefs=[{name:'等级', enableCellEdit: false}];
-	var arr = new Array();
-	arr=[{name:'美甲'},{name:'美睫'}];
-	$scope.columnDefs=$scope.columnDefs.concat(arr);
-	console.log($scope.columnDefs);
-	$scope.gridOptions.columnDefs = $scope.columnDefs;
-
+app.controller('free', function($scope,$http) {
+	$scope.gridOptions = {};
+	$http({
+		method:'post',
+		url:"php/free.php",
+		headers: {
+			'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+		},
+		transformRequest:function(data){
+			return $.param(data);
+		},
+		data:{
+			'opt':"getproject",
+		}
+	})
+	.then(function successCallback(response) {
+		$scope.gridOptions.data =response.data.result;
+		var array=new Array();
+		array=[{name:'rank',displayName:"会员等级",enableCellEdit: false}];
+		$scope.gridOptions.columnDefs=array.concat(response.data.title);
+		if (response.data.error!=0){
+			$scope['_error'].modal('toggle');
+		}
+	});
     $scope.operate=function(operate,value){
 		$scope[operate].modal('toggle');
 	}
-	 $scope.msg = {};
 	 $scope.gridOptions.onRegisterApi = function(gridApi){
           //set gridApi on scope
           $scope.gridApi = gridApi;
           gridApi.edit.on.afterCellEdit($scope,function(rowEntity, colDef, newValue, oldValue){
-            $scope.msg.lastCellEdited = 'edited row id:' + rowEntity.id + ' Column:' + colDef.name + ' newValue:' + newValue + ' oldValue:' + oldValue ;
-            $scope.$apply();
+			var index=new Object();
+			index=clone(rowEntity);
+			index[colDef.name]=oldValue;	
+  //          console.log(index);
+			var update=new Object();
+			update['col']=colDef.name;
+			update['value']=newValue;
+			$http({
+				method:'post',
+				url:"php/free.php",
+				headers: {
+					'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+				},
+				transformRequest:function(data){
+					return $.param(data);
+				},
+				data:{
+					'opt':"modifyproject",
+					'index':index,
+					'data':update,
+				}
+			})
+			.then(function successCallback(response) {
+				if (response.data.error!=0){				
+						$scope.msg=response.data.error;
+						$scope['_error'].modal('toggle');
+						$scope.gridOptions.data =response.data.result;
+				}
+			});
           });
     };
-	$scope.gridOptions.data =[{'等级':'A','美甲':'0.7','美睫':'1'}];
-	$scope.add=function(){
-		
-	}
 })
+function clone(obj)
+{
+	var o,i,j,k;
+	if(typeof(obj)!="object" || obj===null)return obj;
+	if(obj instanceof(Array))
+	{
+		o=[];
+		i=0;j=obj.length;
+		for(;i<j;i++)
+		{
+			if(typeof(obj[i])=="object" && obj[i]!=null)
+			{
+				o[i]=arguments.callee(obj[i]);
+			}
+			else
+			{
+				o[i]=obj[i];
+			}
+		}
+	}
+	else
+	{
+		o={};
+		for(i in obj)
+		{
+			if(typeof(obj[i])=="object" && obj[i]!=null)
+			{
+				o[i]=arguments.callee(obj[i]);
+			}
+			else
+			{
+				o[i]=obj[i];
+			}
+		}
+	}
+ 
+	return o;
+}

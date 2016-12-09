@@ -4,10 +4,10 @@
 					<span class="ladda-label">新增会员</span>
 			</button>
 	</div>
-	<div style="padding-top:20px;width:1070px;height:400px;overflow-y:scroll">
+	<div style="padding-top:20px;width:1070px;height:400px;overflow:auto">
 		<table class="table table-bordered text-center table-hover" style="table-layout:fixed;">
 			<tr>
-				<th class="text-center" style="width:20%">项目</th>
+				<th class="text-center" style="width:20%">会员等级</th>
 				<th class="text-center" style="width:25%" >介绍</th>
 				<th class="text-center" style="width:20%" >操作</th>
 			</tr>
@@ -84,7 +84,7 @@
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
-								<button type="button" class="btn btn-primary" ng-click="modal_operate('_modify',dataindex)" ng-disabled="!modal_modify.project&&!modal_modify.introduce">
+								<button type="button" class="btn btn-primary" ng-click="modal_operate('_modify',dataindex)" ng-disabled="!modal_modify.project||!modal_modify.introduce">
 									 <span class="ladda-label">确定</span>
 								</button>	
 						 </div>
