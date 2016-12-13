@@ -114,21 +114,55 @@ app.directive('select2',function() {
 				}
 		};
 });
-app.controller('homeController', function($scope) {
+app.controller('homeController', function($scope,$http) {
 	$scope.input={
-		operator:"",
-		project:"",
-		card:""
-	};
-    $scope.pageClass = 'page-home';
-	$scope.project=['E','D','C','B','A',];
+		card:'',
+		operator:'',
+		project:'',
+		sum:0,
+	}
+	$http({
+		method:'post',
+		url:"php/home.php",
+		headers: {
+			'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+		},
+		transformRequest:function(data){
+			return $.param(data);
+		},
+		data:{
+			'opt':"ini",
+			'data':""
+		}
+	})
+	.then(function successCallback(response) {
+		if (response.data.error!=0){				
+			$scope.msg=response.data.error;
+			$scope['_error'].modal('toggle');
+		}
+		$scope.data =response.data.result;
+	});
 	$scope.getlist=function(value,type){
-			$scope.$apply(function(){
-			$scope.input[type]=value;
-			console.log($scope.input[type]);
+		$scope.$apply(function(){
+			if (type =='card'){
+				$scope.info=$scope.data.viplist[value];
+				$scope.input.card=$scope.info.card;
+			}else if(type =='project'){
+				$scope.input.sum=0;
+				$scope.input.project=[];
+				for (var i = 0, length = value.length; i < length; i++) {
+					var index=value[i];
+					var rank=$scope.info.rank;
+					var project=$scope.data.project[index].project;
+					console.log(project);
+					$scope.input.sum+=Number($scope.data.project[index].price);
+					$scope.input.project.push($scope.data.project[index].project);
+				}
+			}
 		})
 	}
 	$scope.submit2=function(){
+		console.log($scope.input);
 	}
 })
 app.controller('register', function($scope,uiGridConstants,$http) {
