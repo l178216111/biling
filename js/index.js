@@ -132,9 +132,6 @@ app.controller('homeController', function($scope) {
 	}
 })
 app.controller('register', function($scope,uiGridConstants,$http) {
-	var today = new Date();
-    var nextWeek = new Date();
-    nextWeek.setDate(nextWeek.getDate() + 7);
 	$scope.gridOptions = {
 		enableFiltering: true,
 		enableSorting: true,
@@ -149,7 +146,9 @@ app.controller('register', function($scope,uiGridConstants,$http) {
 		  },type:'string'},
 		  { field: 'birthday' ,displayName:'生日',type:'date'},
 		  { field: 'qq' ,displayName:'QQ/微信',type:'string'},
-		  { field: 'recently' ,displayName:'最近消费', type: 'date'},
+		  { field: 'lastpatronize' ,displayName:'最近消费', type: 'date'},
+		  { field: 'balance' ,displayName:'余额', type: 'number'},
+		  { field: 'points' ,displayName:'积分', type: 'number'},
 		],
 		onRegisterApi: function( gridApi ) {
 		  $scope.grid1Api = gridApi;
@@ -157,7 +156,7 @@ app.controller('register', function($scope,uiGridConstants,$http) {
 	};
 	$http({
 		method:'post',
-		url:"register.php",
+		url:"php/register.php",
 		headers: {
 			'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
 		},
@@ -165,20 +164,52 @@ app.controller('register', function($scope,uiGridConstants,$http) {
 			return $.param(data);
 		},
 		data:{
-			'opt':"getlist"
+			'opt':"ini",
+			'data':""
 		}
 	})
 	.then(function successCallback(response) {
-		$scope.gridOptions.data =response.data;
+		if (response.data.error!=0){				
+			$scope.msg=response.data.error;
+			$scope['_error'].modal('toggle');
+		}
+		$scope.gridOptions.data =response.data.result;
+		$scope.viplist=response.data.viplist;
 	});
-	$scope.register=function(){
-		$scope.add.modal('toggle');
+	$scope.register=function(type){
+		$scope[type].modal('toggle');
+	}
+	$scope.modal_operate=function(type,index){
+			$scope[type].modal('toggle');
+			var data_type="modal"+type;
+			$http({
+				method:'post',
+				url:"php/register.php",
+				headers: {
+					'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+				},
+				transformRequest:function(data){
+					return $.param(data);
+				},
+				data:{
+					'opt':type,
+					'data':$scope[data_type],
+				}
+			})
+			.then(function successCallback(response) {
+				if (response.data.error!=0){				
+					$scope.msg=response.data.error;
+					$scope['_error'].modal('toggle');
+				}
+				$scope[data_type]="";
+				$scope.gridOptions.data =response.data.result;
+			});
 	}
 })
-app.controller('desposit', function($scope,$http) {
+app.controller('deposit', function($scope,$http,$filter) {
 	$http({
 		method:'post',
-		url:"desposit.php",
+		url:"php/deposit.php",
 		headers: {
 			'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
 		},
@@ -186,43 +217,97 @@ app.controller('desposit', function($scope,$http) {
 			return $.param(data);
 		},
 		data:{
-			'opt':"getlist",
+			'opt':"ini",
+			'data':'',
+			'index':'',
 		}
 	})
 	.then(function successCallback(response) {
-		$scope.list={
-			phone:['1111','2222','3333'],
-			card:['1111','2222','3333'],
+		$scope.result =response.data.result;
+		$scope.viplist=response.data.viplist;
+		$scope.store=clone($scope.result);
+		if (response.data.error!=0){
+			$scope['_error'].modal('toggle');
 		}
-	});	
-	$scope.getlist=function(value,type){
-		$http({
-			method:'post',
-			url:"desposit.php",
-			headers: {
-				'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
-			},
-			transformRequest:function(data){
-				return $.param(data);
-			},
-			data:{
-				'opt':"grid",
-				'type':type,
-				'value':value
-			}
-		})
-		.then(function successCallback(response) {
-				$scope.result=response.data
-		});
+	});
+    $scope.operate=function(operate,value){
+//		console.log(operate);
+		$scope.dataindex=value;
+		$scope[operate].modal('toggle');
 	}
-	$scope.desposit=function(card_number){
-		$scope.modal.modal('toggle');
+	$scope.modal_operate=function(type,index){
+			$scope[type].modal('toggle');
+			var data_type="modal"+type;
+			$http({
+				method:'post',
+				url:"php/deposit.php",
+				headers: {
+					'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+				},
+				transformRequest:function(data){
+					return $.param(data);
+				},
+				data:{
+					'opt':type,
+					'data':$scope[data_type],
+					'index':$scope.result[index]
+				}
+			})
+			.then(function successCallback(response) {
+				if (response.data.error!=0){				
+					$scope.msg=response.data.error;
+					$scope['_error'].modal('toggle');
+				}
+				$scope[data_type]="";
+				$scope.result =response.data.result;
+			});
+	}
+	$scope.cancel=function(type){
+		type='modal' + type;
+		$scope[type]="";
+	}
+	$scope.getlist=function(value,type){
+		var array=[]
+		for (var key in $scope.store){
+	//		console.log($scope.store[key][type]);
+			if ($scope.store[key][type]==value){		
+				array.push($scope.store[key]);
+			}
+		}
+		$scope.$apply();
+		$scope.result=array;
+		$scope.$apply();
+//		console.log($scope.result);
 	}
 })
-app.controller('record', function($scope,$http) {
+app.controller('record', function($scope,uiGridConstants,$http) {
+	$scope.gridOptions = {
+		enableFiltering: true,
+		enableSorting: true,
+		columnDefs: [
+		  { field: 'card',displayName:'卡号',type:'number'},
+		  { field: 'name',displayName:'姓名',maxWidth:"100",type:'string' },
+		  { field: 'rank',displayName:'会员等级',maxWidth:"100",type:'string' },
+		  { field: 'gender' ,displayName:'性别', filter: {
+			  term: '',
+			  type: uiGridConstants.filter.SELECT,
+			  selectOptions: [ { value: '男', label: '男' }, { value: '女', label: '女' }]
+		  },type:'string'},
+		  { field: 'birthday' ,displayName:'生日',type:'date'},
+		  { field: 'qq' ,displayName:'QQ/微信',type:'string'},
+		  { field: 'operator' ,displayName:'技师', type: 'string'},
+		  { field: 'project' ,displayName:'项目', type: 'string'},
+		  { field: 'date' ,displayName:'日期', type: 'date'},
+		  { field: 'balance' ,displayName:'余额', type: 'number'},
+		  { field: 'points' ,displayName:'积分', type: 'number'},
+		],
+		onRegisterApi: function( gridApi ) {
+		  $scope.grid1Api = gridApi;
+		}
+	};
 	$http({
 		method:'post',
-		url:"record.php",
+		url:"php/record.php",
 		headers: {
 			'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
 		},
@@ -230,38 +315,16 @@ app.controller('record', function($scope,$http) {
 			return $.param(data);
 		},
 		data:{
-			'opt':"getlist",
+			'opt':"ini",
 		}
 	})
 	.then(function successCallback(response) {
-		$scope.list={
-			phone:['1111','2222','3333'],
-			card:['1111','2222','3333'],
+		if (response.data.error!=0){				
+			$scope.msg=response.data.error;
+			$scope['_error'].modal('toggle');
 		}
-	});	
-	$scope.getlist=function(value,type){
-		$http({
-			method:'post',
-			url:"record.php",
-			headers: {
-				'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
-			},
-			transformRequest:function(data){
-				return $.param(data);
-			},
-			data:{
-				'opt':"grid",
-				'type':type,
-				'value':value
-			}
-		})
-		.then(function successCallback(response) {
-				$scope.result=response.data
-		});
-	}
-	$scope.desposit=function(card_number){
-		$scope.modal.modal('toggle');
-	}
+		$scope.gridOptions.data =response.data.result;
+	});
 })
 app.controller('manageController', function($scope) {
     $scope.pageClass = 'page-manage';
@@ -295,6 +358,10 @@ app.controller('project', function($scope,$http) {
 //		console.log(operate);
 		$scope.dataindex=value;
 		$scope[operate].modal('toggle');
+	}
+	$scope.cancel=function(type){
+		type='modal' + type;
+		$scope[type]="";
 	}
 	$scope.modal_operate=function(type,index){
 			$scope[type].modal('toggle');

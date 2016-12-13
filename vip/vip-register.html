@@ -1,13 +1,13 @@
 <div class="col-md-10 col-md-offset-1" ng-controller="register">
 	<div class="text-center pull-left" style="padding-top:12px">
-			<button type="button" class="ladda-button btn btn-primary" data-style="zoom-in" ng-click="register()">
+			<button type="button" class="ladda-button btn btn-primary" data-style="zoom-in" ng-click="register('_register')">
 					<span class="ladda-label">注册会员</span>
 			</button>
 	</div>
 	<div style="padding-top:50px">
 		<div id="gridOptions" ui-grid="gridOptions" ></div>
 	</div>
-   <div class="modal fade" tabindex="-1" style='margin: 0 auto' role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" modal="add">
+   <div class="modal fade" tabindex="-1" style='margin: 0 auto' role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" modal="_register">
 		   <div class="modal-dialog">
 				  <div class="modal-content">
 						 <div class="modal-header">
@@ -23,55 +23,77 @@
 							<form name="myform">
 								<div class="input-group col-md-6 pull-left">
 									<span class="input-group-addon">卡号:</span>
-									<input type="text" class="form-control" ng-model="input.card"  >
+									<input type="text" class="form-control" ng-model="modal_register.card"  >
 								</div>
 								<div class="input-group col-md-6 pull-right">
 									<span class="input-group-addon">姓名:</span>
-									<input type="text" class="form-control" ng-model="input.name"  >
+									<input type="text" class="form-control" ng-model="modal_register.name"  >
 								</div>
 								<div class="input-group col-md-6 pull-left">
 									<span class="input-group-addon">性别:</span>
-									<select  class="form-control" ng-model="input.sex" >
-											<option value="mam">男</option>
-											<option value="woman">女</option>
+									<select  class="form-control" ng-model="modal_register.gender" >
+											<option value="男">男</option>
+											<option value="女">女</option>
 									</select>
 								</div>
 								<div class="input-group col-md-6 pull-right">
 									<span class="input-group-addon">手机号:</span>
-									<input type="text" class="form-control" ng-model="input.phone"  >
+									<input type="text" class="form-control" ng-model="modal_register.phone"  >
 								</div>
 								<div class="input-group col-md-6 pull-left">
 									<span class="input-group-addon">生日:</span>
 									<div class="input-group date form_datetime" data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input1" datetime >
-									<input class="form-control" size="16" type="text"  ng-model="birthday" >
+									<input class="form-control" size="16" type="text"  ng-model="modal_register.birthday" >
 									<span class="input-group-addon"><span class="glyphicon glyphicon-th"></span>
 									</div>
 								</div>
 								<div class="input-group col-md-6 pull-right">
 									<span class="input-group-addon">QQ/微信:</span>
-									<input type="text" class="form-control" ng-model="input.qq"  >
+									<input type="text" class="form-control" ng-model="modal_register.qq"  >
 								</div>
 								<div class="input-group col-md-6 pull-left">
 									<span class="input-group-addon">充值:</span>
-									<input type="text" class="form-control" ng-model="input.price"  >
+									<input type="text" class="form-control" ng-model="modal_register.balance"  >
 								</div>
 								<div class="input-group col-md-6 ">
 									<span class="input-group-addon">会员等级:</span>
-									<select  class="form-control" ng-model="input.rank" >
-											<option value="A">A</option>
-											<option value="B">B</option>
+									<select  class="form-control" ng-model="modal_register.rank" >
+										<option disabled selected value></option>
+										<option ng-repeat="x in viplist">{{x}}</option>
 									</select>
 								</div>
 							</form>
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
-								<button type="button" class="btn btn-primary" ng-disabled="!input.name||!input.card||!input.sex||!input.phone||!input.price||!input.rank">
+								<button type="button" class="btn btn-primary" ng-click="modal_operate('_register')" ng-disabled="!modal_register.name||!modal_register.card||!modal_register.gender||!modal_register.phone||!modal_register.balance||!modal_register.rank">
 									 <span class="ladda-label">注册</span>
 								</button>
 								
 						 </div>
+						 </div>
 				</div>
 		</div>
-  </div>
+	<div class="modal fade" tabindex="-1" style='margin: 0 auto' role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" modal="_error">
+	   <div class="modal-dialog">
+			  <div class="modal-content">
+					 <div class="modal-header">
+							<button type="button" class="close" 
+							   data-dismiss="modal" aria-hidden="true">
+									  &times;
+							</button>
+							<h6 class="modal-title">
+									错误
+							</h6>
+					 </div>
+					 <div class="modal-body">
+							<h5>{{msg}}</h5>
+					 </div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal" >确定</button>
+					 </div>
+			</div>
+	</div>
+   </div>
+   
 </div>

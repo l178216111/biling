@@ -1,6 +1,7 @@
 <?php
 header("Content-type:text/html;charset=utf-8");
 require_once('db_config.php');
+require_once('sql_string.php');
 $opt=$_POST['opt'];
 $data=$_POST['data'];
 $index=$_POST['index'];
@@ -48,7 +49,9 @@ function addproject($data){
 	if(!mysql_query($ins_table_free)){
 	  $isBad =mysql_error();
 	}else{
-		$ins_table_project = "INSERT INTO project(project,price,introduce) VALUES ('".$data['project']."','".$data['price']."','".$data['introduce']."')";
+		$insert=array();
+		$insert=sql_string($data,'insert');
+		$ins_table_project = "INSERT INTO project(".$insert['key'].") VALUES (".$insert['value'].")";
 		//echo $ins_table_project;
 		if(!mysql_query($ins_table_project)){
 		  $isBad =mysql_error();
@@ -128,22 +131,6 @@ function modifyproject($data,$index){
 	mysql_query("END"); 
 	mysql_close($conn);
 	return $isBad;
-}
-function sql_string($array,$type){
-	$string=array();
-	foreach($array as $key=>$val){
-		if ($key ==='$$hashKey'){
-			continue;
-		};
-		$string_tmp="$key='$val'";
-		array_push($string,$string_tmp);
-	}
-	if ($type=='where'){
-		$string_sql=join(' and ',$string);
-	}elseif($type=='set'){
-		$string_sql=join(',',$string);
-	}
-	return $string_sql;
 }
 echo json_encode($output);
 ?>

@@ -1,6 +1,7 @@
 <?php
 header("Content-type:text/html;charset=utf-8");
 require_once('db_config.php');
+require_once('sql_string.php');
 $opt=$_POST['opt'];
 //$opt="getproject";
 $output=array();
@@ -68,21 +69,5 @@ function modifyproject($data,$index){
 	mysql_query("END"); 
 	mysql_close($conn);
 	return $isBad;
-}
-function sql_string($array,$type){
-	$string=array();
-	foreach($array as $key=>$val){
-		if ($key ==='$$hashKey'){
-			continue;
-		};
-		$string_tmp="$key='$val'";
-		array_push($string,$string_tmp);
-	}
-	if ($type=='where'){
-		$string_sql=join(' and ',$string);
-	}elseif($type=='set'){
-		$string_sql=join(',',$string);
-	}
-	return $string_sql;
 }
 ?>
