@@ -83,7 +83,7 @@ function deposit($data,$index){
 			$isBad =mysql_error();
 		}
 	}else{
-		mysql_error();
+		$isBad=mysql_error();
 	}
 	if($isBad !== 0){
 //		echo '回滚';

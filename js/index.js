@@ -104,6 +104,8 @@ app.directive('select2',function() {
 		return{
 				restrict: 'A',
 				link:function($scope, element, attrs) {
+								var string='select2'+attrs.select2;
+								$scope[string]=$(element);
 								$(element).select2({placeholder: 'Select a '+ attrs.select2 });
 								if (attrs.select2 =='project'){
 									$(element).select2({closeOnSelect: false});
@@ -115,12 +117,18 @@ app.directive('select2',function() {
 		};
 });
 app.controller('homeController', function($scope,$http) {
-	$scope.input={
-		card:'',
-		operator:'',
-		project:'',
-		sum:0,
+	var initial=function(){
+		$scope.input={
+			card:null,
+			operator:null,
+			project:null,
+			sum:0,
+		};
+		delete  $scope.info;
+//		$scope.select2project.val("").trigger("change");
+//		$scope.select2card.val("").trigger("change");
 	}
+	initial();
 	$http({
 		method:'post',
 		url:"php/home.php",
@@ -143,26 +151,78 @@ app.controller('homeController', function($scope,$http) {
 		$scope.data =response.data.result;
 	});
 	$scope.getlist=function(value,type){
-		$scope.$apply(function(){
+//		$scope.$apply(function(){
 			if (type =='card'){
-				$scope.info=$scope.data.viplist[value];
-				$scope.input.card=$scope.info.card;
+				//console.log(value);
+			//		console.log(type + ' value '+value);
+					if (value != null){
+			//			console.log(value);
+						$scope.info=$scope.data.viplist[value];							
+						if (typeof($scope.info.card)!='undefined'){
+							$scope.input.card=$scope.info.card;
+						}
+						$scope.$apply();
+					}
+					$scope.select2project.val("").trigger("change");
+					$scope.select2operator.val("").trigger("change");					
 			}else if(type =='project'){
-				$scope.input.sum=0;
-				$scope.input.project=[];
-				for (var i = 0, length = value.length; i < length; i++) {
-					var index=value[i];
-					var rank=$scope.info.rank;
-					var project=$scope.data.project[index].project;
-					console.log(project);
-					$scope.input.sum+=Number($scope.data.project[index].price);
-					$scope.input.project.push($scope.data.project[index].project);
+//				console.log(value);
+				if (value != null){
+					$scope.input.sum=0;
+					$scope.input.project=[];
+					for (var i = 0, length = value.length; i < length; i++) {
+						var index=value[i];
+						var rank=$scope.info.rank;
+						var project=$scope.data.project[index].project;
+						var free=$scope.data.free[rank][project];
+						$scope.input.sum+=Number($scope.data.project[index].price)*free;
+						$scope.input.project.push($scope.data.project[index].project);
+					}
+					$scope.$apply();
+				}
+				
+			}else if (type =='operator'){
+				if (value != null){
+					if (typeof($scope.input.operator)!='undefined'){
+						$scope.input.operator=value;
+					}
+					$scope.$apply();
 				}
 			}
-		})
+			
+//		})
 	}
-	$scope.submit2=function(){
-		console.log($scope.input);
+	$scope.submit=function(){
+	//	console.log($scope.input.sum);
+		if (Number($scope.input.sum) > Number($scope.info.balance)){
+			$scope.msg="余额不足";
+			$scope['_error'].modal('toggle');
+		}else{
+			$http({
+				method:'post',
+				url:"php/home.php",
+				headers: {
+					'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+				},
+				transformRequest:function(data){
+					return $.param(data);
+				},
+				data:{
+					'opt':"submit",
+					'data':$scope.input
+				}
+			})
+			.then(function successCallback(response) {
+				if (response.data.error!=0){				
+					$scope.msg=response.data.error;
+					$scope['_error'].modal('toggle');
+				}
+				$scope.data =response.data.result;
+				initial();
+				$scope.select2card.val("").trigger("change");
+//				
+			});
+		}
 	}
 })
 app.controller('register', function($scope,uiGridConstants,$http) {
@@ -172,15 +232,15 @@ app.controller('register', function($scope,uiGridConstants,$http) {
 		columnDefs: [
 		  { field: 'card',displayName:'卡号',type:'number'},
 		  { field: 'name',displayName:'姓名',maxWidth:"100",type:'string' },
-		  { field: 'rank',displayName:'等级',maxWidth:"100",type:'string' },
-		  { field: 'gender' ,displayName:'性别', filter: {
+		  { field: 'rank',displayName:'等级',maxWidth:"100",type:'string',width:'5%' },
+		  { field: 'gender' ,displayName:'性别',width:'7%',filter: {
 			  term: '',
 			  type: uiGridConstants.filter.SELECT,
 			  selectOptions: [ { value: '男', label: '男' }, { value: '女', label: '女' }]
 		  },type:'string'},
 		  { field: 'birthday' ,displayName:'生日',type:'date'},
 		  { field: 'qq' ,displayName:'QQ/微信',type:'string'},
-		  { field: 'lastpatronize' ,displayName:'最近消费', type: 'date'},
+		  { field: 'lastpatronize' ,displayName:'最近消费', type: 'date',width:'15%'},
 		  { field: 'balance' ,displayName:'余额', type: 'number'},
 		  { field: 'points' ,displayName:'积分', type: 'number'},
 		],
@@ -321,17 +381,17 @@ app.controller('record', function($scope,uiGridConstants,$http) {
 		columnDefs: [
 		  { field: 'card',displayName:'卡号',type:'number'},
 		  { field: 'name',displayName:'姓名',maxWidth:"100",type:'string' },
-		  { field: 'rank',displayName:'会员等级',maxWidth:"100",type:'string' },
-		  { field: 'gender' ,displayName:'性别', filter: {
+		  { field: 'rank',displayName:'会员等级',maxWidth:"100",type:'string',width:'5%'},
+		  { field: 'gender' ,displayName:'性别',width:'7%', filter: {
 			  term: '',
 			  type: uiGridConstants.filter.SELECT,
 			  selectOptions: [ { value: '男', label: '男' }, { value: '女', label: '女' }]
 		  },type:'string'},
-		  { field: 'birthday' ,displayName:'生日',type:'date'},
-		  { field: 'qq' ,displayName:'QQ/微信',type:'string'},
+		  { field: 'birthday' ,displayName:'生日',type:'date',width:'10%'},
+		  { field: 'qq' ,displayName:'QQ/微信',type:'string',width:'10%'},
 		  { field: 'operator' ,displayName:'技师', type: 'string'},
-		  { field: 'project' ,displayName:'项目', type: 'string'},
-		  { field: 'date' ,displayName:'日期', type: 'date'},
+		  { field: 'project' ,displayName:'项目', type: 'string',width:'15%'},
+		  { field: 'date' ,displayName:'日期', type: 'date',width:'15%'},
 		  { field: 'balance' ,displayName:'余额', type: 'number'},
 		  { field: 'points' ,displayName:'积分', type: 'number'},
 		],
