@@ -140,7 +140,10 @@ app.controller('homeController', function($scope,$http) {
 		},
 		data:{
 			'opt':"ini",
-			'data':""
+			'data':{
+				"result":"  asd  ",
+				'asd':"asdasd  "
+			}
 		}
 	})
 	.then(function successCallback(response) {

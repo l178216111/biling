@@ -3,8 +3,8 @@ header("Content-type:text/html;charset=utf-8");
 require_once('db_config.php');
 require_once('sql_string.php');
 $opt=$_POST['opt'];
-$data=$_POST['data'];
-$index=$_POST['index'];
+$data=TrimArray($_POST['data']);
+$index=TrimArray($_POST['index']);
 $output=array();
 if ($opt == 'ini'){
 	$output['error']=0;

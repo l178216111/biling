@@ -11,8 +11,8 @@ if ($opt=='getproject'){
 	$output['result']=$result['data'];
 	$output['title']=$result['title'];
 }elseif($opt=='modifyproject'){
-	$data=$_POST['data'];
-	$index=$_POST['index'];
+	$data=TrimArray($_POST['data']);
+	$index=TrimArray($_POST['index']);
 	$output['error']=modifyproject($data,$index);
 	if ($output['error']!=0){
 		$result=getproject();
