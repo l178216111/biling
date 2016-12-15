@@ -13,10 +13,10 @@ if ($opt=='getproject'){
 }elseif($opt=='modifyproject'){
 	$data=TrimArray($_POST['data']);
 	$index=TrimArray($_POST['index']);
-	$output['error']=modifyproject($data,$index);
-	if ($output['error']!=0){
-		$result=getproject();
-		$output['result']=$result['data'];
+	if ($data['value']>1 or $data['value']<=0){
+		$output['error']="折扣输入有误";
+	}else{
+		$output['error']=modifyproject($data,$index);
 	}
 }
 

@@ -45,7 +45,7 @@ function addproject($data){
 	mysql_select_db($mysql['database'],$conn);
 	mysql_query('START TRANSACTION');
 	$isBad = 0;
-	$ins_table_free="alter table free add  column ".$data['project']." varchar(100)  default 1";
+	$ins_table_free="alter table free add  column ".$data['project']." float  default 1";
 	if(!mysql_query($ins_table_free)){
 	  $isBad =mysql_error();
 	}else{

@@ -1,5 +1,4 @@
-
-var app=angular.module('myApp',['ui.router','ngAnimate','ui.grid','ui.grid.edit']);
+var app=angular.module('myApp',['ui.router','ngAnimate','ui.grid','ui.grid.edit','toastr']);
 app.run(function($rootScope, $location,$state) {
 	$rootScope.$on('$stateChangeStart', function(event, toState, toStateParams) {
 		if (toState.name=='manage'  ){
@@ -58,7 +57,7 @@ app.config(function($stateProvider,$urlRouterProvider) {
 		name:'admin',
 		url:'/admin',
 		templateUrl: 'page-admin.html',
-		controller: 'adminController'
+//		controller: 'adminController'
 	},{
 		name:'admin.salary',
 		url:'/salary ',
@@ -73,6 +72,18 @@ app.config(function($stateProvider,$urlRouterProvider) {
 		$stateProvider.state(state);
 	});
 	$urlRouterProvider.otherwise("home");
+});
+app.config(function(toastrConfig) {
+  angular.extend(toastrConfig, {
+    autoDismiss: false,
+    containerId: 'toast-container',
+    maxOpened: 0,    
+    newestOnTop: true,
+    positionClass: 'toast-bottom-right',
+    preventDuplicates: false,
+    preventOpenDuplicates: false,
+    target: 'body'
+  });
 });
 app.directive('modal', function () {
 		return {
@@ -116,7 +127,7 @@ app.directive('select2',function() {
 				}
 		};
 });
-app.controller('homeController', function($scope,$http) {
+app.controller('homeController', function($scope,$http,toastr) {
 	var initial=function(){
 		$scope.input={
 			card:null,
@@ -140,16 +151,12 @@ app.controller('homeController', function($scope,$http) {
 		},
 		data:{
 			'opt':"ini",
-			'data':{
-				"result":"  asd  ",
-				'asd':"asdasd  "
+			'data':""
 			}
-		}
 	})
 	.then(function successCallback(response) {
 		if (response.data.error!=0){				
-			$scope.msg=response.data.error;
-			$scope['_error'].modal('toggle');
+			toastr.error(response.data.error,'错误');
 		}
 		$scope.data =response.data.result;
 	});
@@ -177,7 +184,11 @@ app.controller('homeController', function($scope,$http) {
 						var index=value[i];
 						var rank=$scope.info.rank;
 						var project=$scope.data.project[index].project;
-						var free=$scope.data.free[rank][project];
+						if (typeof($scope.data.free[rank])=='undefined'){
+							var free=1;
+						}else{
+							var free=$scope.data.free[rank][project];
+						}
 						$scope.input.sum+=Number($scope.data.project[index].price)*free;
 						$scope.input.project.push($scope.data.project[index].project);
 					}
@@ -195,11 +206,14 @@ app.controller('homeController', function($scope,$http) {
 			
 //		})
 	}
+	$scope.rest=function(){
+				initial();
+				$scope.select2card.val("").trigger("change");
+	}
 	$scope.submit=function(){
 	//	console.log($scope.input.sum);
 		if (Number($scope.input.sum) > Number($scope.info.balance)){
-			$scope.msg="余额不足";
-			$scope['_error'].modal('toggle');
+			toastr.warning('余额不足','警告');
 		}else{
 			$http({
 				method:'post',
@@ -217,8 +231,9 @@ app.controller('homeController', function($scope,$http) {
 			})
 			.then(function successCallback(response) {
 				if (response.data.error!=0){				
-					$scope.msg=response.data.error;
-					$scope['_error'].modal('toggle');
+					toastr.error(response.data.error,'错误');
+				}else{
+					toastr.success("操作成功",'Succusee');				
 				}
 				$scope.data =response.data.result;
 				initial();
@@ -228,7 +243,7 @@ app.controller('homeController', function($scope,$http) {
 		}
 	}
 })
-app.controller('register', function($scope,uiGridConstants,$http) {
+app.controller('register', function($scope,uiGridConstants,$http,toastr) {
 	$scope.gridOptions = {
 		enableFiltering: true,
 		enableSorting: true,
@@ -267,8 +282,7 @@ app.controller('register', function($scope,uiGridConstants,$http) {
 	})
 	.then(function successCallback(response) {
 		if (response.data.error!=0){				
-			$scope.msg=response.data.error;
-			$scope['_error'].modal('toggle');
+			toastr.error(response.data.error,'错误');
 		}
 		$scope.gridOptions.data =response.data.result;
 		$scope.viplist=response.data.viplist;
@@ -295,15 +309,16 @@ app.controller('register', function($scope,uiGridConstants,$http) {
 			})
 			.then(function successCallback(response) {
 				if (response.data.error!=0){				
-					$scope.msg=response.data.error;
-					$scope['_error'].modal('toggle');
+					toastr.error(response.data.error,'错误');
+				}else{
+					toastr.success("操作成功",'Succusee');
 				}
 				$scope[data_type]="";
 				$scope.gridOptions.data =response.data.result;
 			});
 	}
 })
-app.controller('deposit', function($scope,$http,$filter) {
+app.controller('deposit', function($scope,$http,$filter,toastr) {
 	$http({
 		method:'post',
 		url:"php/deposit.php",
@@ -324,7 +339,7 @@ app.controller('deposit', function($scope,$http,$filter) {
 		$scope.viplist=response.data.viplist;
 		$scope.store=clone($scope.result);
 		if (response.data.error!=0){
-			$scope['_error'].modal('toggle');
+			toastr.error(response.data.error,'错误');
 		}
 	});
     $scope.operate=function(operate,value){
@@ -352,8 +367,9 @@ app.controller('deposit', function($scope,$http,$filter) {
 			})
 			.then(function successCallback(response) {
 				if (response.data.error!=0){				
-					$scope.msg=response.data.error;
-					$scope['_error'].modal('toggle');
+					toastr.error(response.data.error,'错误');
+				}else{
+					toastr.success("操作成功",'Succusee');
 				}
 				$scope[data_type]="";
 				$scope.result =response.data.result;
@@ -377,7 +393,7 @@ app.controller('deposit', function($scope,$http,$filter) {
 //		console.log($scope.result);
 	}
 })
-app.controller('record', function($scope,uiGridConstants,$http) {
+app.controller('record', function($scope,uiGridConstants,$http,toastr) {
 	$scope.gridOptions = {
 		enableFiltering: true,
 		enableSorting: true,
@@ -417,19 +433,12 @@ app.controller('record', function($scope,uiGridConstants,$http) {
 	})
 	.then(function successCallback(response) {
 		if (response.data.error!=0){				
-			$scope.msg=response.data.error;
-			$scope['_error'].modal('toggle');
+			toastr.error(response.data.error,'错误');
 		}
 		$scope.gridOptions.data =response.data.result;
 	});
 })
-app.controller('manageController', function($scope) {
-    $scope.pageClass = 'page-manage';
-})
-app.controller('adminController', function($scope) {
-    $scope.pageClass = 'page-admin';
-})
-app.controller('project', function($scope,$http) {
+app.controller('project', function($scope,$http,toastr) {
 	$http({
 		method:'post',
 		url:"php/project.php",
@@ -448,7 +457,7 @@ app.controller('project', function($scope,$http) {
 	.then(function successCallback(response) {
 		$scope.result =response.data.result;
 		if (response.data.error!=0){
-			$scope['_error'].modal('toggle');
+			toastr.error(response.data.error,'错误');
 		}
 	});
     $scope.operate=function(operate,value){
@@ -480,15 +489,16 @@ app.controller('project', function($scope,$http) {
 			})
 			.then(function successCallback(response) {
 				if (response.data.error!=0){				
-					$scope.msg=response.data.error;
-					$scope['_error'].modal('toggle');
+					toastr.error(response.data.error,'错误');
+				}else{
+					toastr.success("操作成功",'Succusee');
 				}
 				$scope[data_type]="";
 				$scope.result =response.data.result;
 			});
 	}
 })
-app.controller('mvip', function($scope,$http) {
+app.controller('mvip', function($scope,$http,toastr) {
 	$http({
 		method:'post',
 		url:"php/mvip.php",
@@ -507,7 +517,7 @@ app.controller('mvip', function($scope,$http) {
 	.then(function successCallback(response) {
 		$scope.result =response.data.result;
 		if (response.data.error!=0){
-			$scope['_error'].modal('toggle');
+			toastr.error(response.data.error,'错误');
 		}
 	});
     $scope.operate=function(operate,value){
@@ -535,15 +545,16 @@ app.controller('mvip', function($scope,$http) {
 			})
 			.then(function successCallback(response) {
 				if (response.data.error!=0){				
-					$scope.msg=response.data.error;
-					$scope['_error'].modal('toggle');
+					toastr.error(response.data.error,'错误');
+				}else{
+					toastr.success("操作成功",'Succusee');
 				}
 				$scope[data_type]="";
 				$scope.result =response.data.result;
 			});
 	}
 })
-app.controller('free', function($scope,$http) {
+app.controller('free', function($scope,$http,toastr) {
 	$scope.gridOptions = {};
 	$http({
 		method:'post',
@@ -564,7 +575,7 @@ app.controller('free', function($scope,$http) {
 		array=[{name:'rank',displayName:"会员等级",enableCellEdit: false}];
 		$scope.gridOptions.columnDefs=array.concat(response.data.title);
 		if (response.data.error!=0){
-			$scope['_error'].modal('toggle');
+			toastr.error(response.data.error,'错误');
 		}
 	});
     $scope.operate=function(operate,value){
@@ -574,6 +585,7 @@ app.controller('free', function($scope,$http) {
           //set gridApi on scope
           $scope.gridApi = gridApi;
           gridApi.edit.on.afterCellEdit($scope,function(rowEntity, colDef, newValue, oldValue){
+//			  console.log(colDef.name);
 			var index=new Object();
 			index=clone(rowEntity);
 			index[colDef.name]=oldValue;	
@@ -599,8 +611,10 @@ app.controller('free', function($scope,$http) {
 			.then(function successCallback(response) {
 				if (response.data.error!=0){				
 						$scope.msg=response.data.error;
-						$scope['_error'].modal('toggle');
-						$scope.gridOptions.data =response.data.result;
+						toastr.error(response.data.error,'错误');
+						rowEntity[colDef.name]=oldValue;
+				}else{
+					toastr.success("操作成功",'Succusee');
 				}
 			});
           });
