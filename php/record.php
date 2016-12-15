@@ -17,7 +17,7 @@ function ini(){
 	mysql_select_db($mysql['database'],$conn);
 	$sql="select 
 	a.card,a.project,a.date,a.operator,a.balance,a.points,b.name,b.rank,b.gender,b.phone,b.birthday
-	from record a left join viplist b on a.card=b.card";
+	from record a left join viplist b on a.card=b.card order by date desc";
 	$result = mysql_query($sql);
 //	var_dump($result);
 	if( mysql_num_rows($result)) {
