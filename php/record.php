@@ -16,7 +16,7 @@ function ini(){
 	mysql_query("set names 'utf8'");
 	mysql_select_db($mysql['database'],$conn);
 	$sql="select 
-	a.card,a.project,a.date,a.operator,a.balance,a.points,b.name,b.rank,b.gender,b.phone,b.birthday
+	a.card,a.project,a.date,a.operator,a.balance,a.points,b.name,b.rank,b.gender,b.phone,b.birthday,b.qq
 	from record a left join viplist b on a.card=b.card order by date desc";
 	$result = mysql_query($sql);
 //	var_dump($result);

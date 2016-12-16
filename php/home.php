@@ -80,7 +80,7 @@ function submit($data){
 			}else{
 				$balance=$row['balance']-$data['sum'];
 			}
-			$points=$row['points']+$data['sum']*10;
+			$points=$row['points']+$data['sum'];
 		}
 		date_default_timezone_set('PRC');
 		$time=date("Y-m-d h:i");

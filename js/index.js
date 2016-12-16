@@ -6,6 +6,20 @@ app.run(function($rootScope, $location,$state) {
 		}
     });
 });
+app.service('scopeService', function() {
+     return {
+         safeApply: function ($scope, fn) {
+             var phase = $scope.$root.$$phase;
+             if (phase == '$apply' || phase == '$digest') {
+                 if (fn && typeof fn === 'function') {
+                     fn();
+                 }
+             } else {
+                 $scope.$apply(fn);
+             }
+         },
+     };
+});
 app.config(function($stateProvider,$urlRouterProvider) {
 	var states=[{
 		name:'home',
@@ -127,7 +141,7 @@ app.directive('select2',function() {
 				}
 		};
 });
-app.controller('homeController', function($scope,$http,toastr) {
+app.controller('homeController', function($scope,$http,toastr,scopeService,$rootScope) {
 	var initial=function(){
 		$scope.input={
 			card:null,
@@ -161,40 +175,40 @@ app.controller('homeController', function($scope,$http,toastr) {
 		$scope.data =response.data.result;
 	});
 	$scope.getlist=function(value,type){
-//		$scope.$apply(function(){
 			if (type =='card'){
-				//console.log(value);
-			//		console.log(type + ' value '+value);
 					if (value != null){
-			//			console.log(value);
 						$scope.info=$scope.data.viplist[value];							
 						if (typeof($scope.info.card)!='undefined'){
 							$scope.input.card=$scope.info.card;
 						}
 						$scope.$apply();
+					}else{
+						delete  $scope.info;
 					}
 					$scope.select2project.val("").trigger("change");
 					$scope.select2operator.val("").trigger("change");					
 			}else if(type =='project'){
-//				console.log(value);
-				if (value != null){
-					$scope.input.sum=0;
-					$scope.input.project=[];
-					for (var i = 0, length = value.length; i < length; i++) {
-						var index=value[i];
-						var rank=$scope.info.rank;
-						var project=$scope.data.project[index].project;
-						if (typeof($scope.data.free[rank])=='undefined'){
-							var free=1;
-						}else{
-							var free=$scope.data.free[rank][project];
+//				console.log(type +''+''+value);
+				scopeService.safeApply($rootScope, function() {
+					if (value != null){
+						$scope.input.sum=0;
+						$scope.input.project=[];
+						for (var i = 0, length = value.length; i < length; i++) {
+							var index=value[i];
+							var rank=$scope.info.rank;
+							var project=$scope.data.project[index].project;
+							if (typeof($scope.data.free[rank])=='undefined'){
+								var free=1;
+							}else{
+								var free=$scope.data.free[rank][project];
+							}
+							$scope.input.sum+=Number($scope.data.project[index].price)*free;
+							$scope.input.project.push($scope.data.project[index].project);
 						}
-						$scope.input.sum+=Number($scope.data.project[index].price)*free;
-						$scope.input.project.push($scope.data.project[index].project);
+					}else{					
+							$scope.input.sum=0;	
 					}
-					$scope.$apply();
-				}
-				
+				});	
 			}else if (type =='operator'){
 				if (value != null){
 					if (typeof($scope.input.operator)!='undefined'){
@@ -236,7 +250,6 @@ app.controller('homeController', function($scope,$http,toastr) {
 					toastr.success("操作成功",'Succusee');				
 				}
 				$scope.data =response.data.result;
-				initial();
 				$scope.select2card.val("").trigger("change");
 //				
 			});
