@@ -1,10 +1,6 @@
 var app=angular.module('myApp',['ui.router','ngAnimate','ui.grid','ui.grid.edit','toastr']);
 app.run(function($rootScope, $location,$state) {
-	$rootScope.$on('$stateChangeStart', function(event, toState, toStateParams) {
-		if (toState.name=='manage'  ){
-			console.log(toState);
-		}
-    });
+
 });
 app.service('scopeService', function() {
      return {
@@ -20,11 +16,52 @@ app.service('scopeService', function() {
          },
      };
 });
-app.config(function($stateProvider,$urlRouterProvider) {
+app.factory('myInterceptor', ["$rootScope", function ($rootScope) {  
+ var timestampMarker = {  
+	 request: function (config) { 
+		 $rootScope.loading = true;  
+		 return config;  
+	 },  
+	 response: function (response) {  
+		$rootScope.loading = false;  
+		 return response;  
+	 }  
+ };  
+ return timestampMarker;  
+}]);
+app.config(
+	function($stateProvider,$httpProvider,$urlRouterProvider) {
 	var states=[{
 		name:'home',
 		url:'/home',
 		templateUrl:'page-home.html',
+		resolve:{
+			data: function($http) {
+				return $http({
+					method:'post',
+					url:"php/home.php",
+					headers: {
+						'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+					},
+					transformRequest:function(data){
+						return $.param(data);
+					},
+					data:{
+						'opt':"ini",
+						'data':""
+						}
+				})
+				.then(function successCallback(response) {
+					return response.data;
+				});
+			}
+		},
+		controller:function($scope,data,toastr) {
+          $scope.data=data.result;
+		  	if (data.error!=0){
+				toastr.error(data.error,'错误');
+			}
+        }
 	//	controller:'homeController'
 	},{
 		name:'vip',
@@ -34,39 +71,209 @@ app.config(function($stateProvider,$urlRouterProvider) {
 	},{
 		name:'vip.deposit',
 		url:'/deposit',
-		templateUrl:'vip/vip-deposit.html'
+		templateUrl:'vip/vip-deposit.html',
+		resolve:{
+			data:function($http){
+				return 	$http({
+					method:'post',
+					url:"php/deposit.php",
+					headers: {
+						'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+					},
+					transformRequest:function(data){
+						return $.param(data);
+					},
+					data:{
+						'opt':"ini",
+						'data':'',
+						'index':'',
+					}
+				})
+				.then(function successCallback(response) {
+					return response.data;
+				});
+			}
+		},
+		controller:function($scope,data,toastr){
+			$scope.result =data.result;
+			$scope.viplist=data.viplist;
+			if (data.error!=0){
+				toastr.error(data.error,'错误');
+			}
+		}
 	},{
 		name:'vip.records',
 		url:'/records',
 		templateUrl:'vip/vip-records.html',
+		resolve:{
+			data:function($http){
+				return 	$http({
+					method:'post',
+					url:"php/record.php",
+					headers: {
+						'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+					},
+					transformRequest:function(data){
+						return $.param(data);
+					},
+					data:{
+						'opt':"ini",
+					}
+				})
+				.then(function successCallback(response) {
+					return response.data;
+				});
+			}
+		},
+		controller:function($scope,data,toastr){
+			if (data.error!=0){				
+				toastr.error(data.error,'错误');
+			}
+			$scope.data =data.result;
+		}
 	},{
 		name:'vip.register',
 		url:'/register',
 		templateUrl:'vip/vip-register.html',
+		resolve:{
+			data:function($http){
+				return	$http({
+					method:'post',
+					url:"php/register.php",
+					headers: {
+						'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+					},
+					transformRequest:function(data){
+						return $.param(data);
+					},
+					data:{
+						'opt':"ini",
+						'data':""
+					}
+				})
+				.then(function successCallback(response) {
+					return response.data;
+				});
+			}
+		},
+		controller:function($scope,data,toastr){
+			if (data.error!=0){				
+				toastr.error(data.error,'错误');
+			}
+			$scope.data =data.result;
+			$scope.viplist=data.viplist;
+		}
 	},{
 		name:'manage', 
 		url:'/manage',
+		cache:false,
 		templateUrl: 'page-manage.html',
 	//	controller: 'manageController'
 	},{
 		name:'manage.project', 
 		url:'/project',
+		cache:false,
 		templateUrl: 'manage/page-project.html',
+		resolve:{
+			   authenticate: authenticate,
+		       data: function($http) {
+					return $http({
+						method:'post',
+						url:"php/project.php",
+						headers: {
+							'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+						},
+						transformRequest:function(data){
+							return $.param(data);
+						},
+						data:{
+							'opt':"getproject",
+							'data':'',
+							'index':'',
+						}
+					})
+					.then(function successCallback(response) {
+						return response.data;
+					});
+				},
+		},
+		controller: function($scope,data,toastr) {
+          $scope.result=data.result;
+		  	if (data.error!=0){
+				toastr.error(data.error,'错误');
+			}
+      }
 	},{
 		name:'manage.free', 
 		url:'/free',
+		cache:false,
 		templateUrl: 'manage/page-free.html',
-	//	controller: 'manageController'
+		resolve:{
+			data:function($http){
+				return 	$http({
+					method:'post',
+					url:"php/free.php",
+					headers: {
+						'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+					},
+					transformRequest:function(data){
+						return $.param(data);
+					},
+					data:{
+						'opt':"getproject",
+					}
+				})
+				.then(function successCallback(response) {
+					return response.data;
+				});
+			}
+		},
+		controller: function($scope,data,toastr){
+					$scope.data={};
+					$scope.data.result = data.result;
+					$scope.data.title = data.title;
+					if (data.error!=0){
+						toastr.error(data.error,'错误');
+					}
+		}
 	},{
 		name:'manage.operator', 
 		url:'/operator',
+		cache:false,
 		templateUrl: 'manage/page-operator.html',
 	//	controller: 'manageController'
 	},{
 		name:'manage.mvip', 
 		url:'/mvip',
 		templateUrl: 'manage/page-mvip.html',
-	//	controller: 'manageController'
+		resolve:{
+			data:function($http){
+				return 	$http({
+					method:'post',
+					url:"php/mvip.php",
+					headers: {
+						'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+					},
+					transformRequest:function(data){
+						return $.param(data);
+					},
+					data:{
+						'opt':"getproject",
+						'data':'',
+						'index':'',
+					}
+				})
+				.then(function successCallback(response) {
+					return response.data;
+				});
+			}
+		},
+		controller: function($scope,toastr,data){
+			$scope.result =data.result;
+			if (data.error!=0){
+				toastr.error(data.error,'错误');
+			}
+		}
 	},{
 		name:'admin',
 		url:'/admin',
@@ -86,19 +293,38 @@ app.config(function($stateProvider,$urlRouterProvider) {
 		$stateProvider.state(state);
 	});
 	$urlRouterProvider.otherwise("home");
-});
-app.config(function(toastrConfig) {
-  angular.extend(toastrConfig, {
-    autoDismiss: false,
-    containerId: 'toast-container',
-    maxOpened: 0,    
-    newestOnTop: true,
-    positionClass: 'toast-bottom-right',
-    preventDuplicates: false,
-    preventOpenDuplicates: false,
-    target: 'body'
-  });
-});
+	$httpProvider.interceptors.push('myInterceptor');
+	function authenticate($q,$rootScope, $state, $timeout,toastr) {
+		
+      if (0) {
+        // Resolve the promise successfully
+        return $q.when()
+      } else {
+		 toastr.info("权限不足",'Info');
+        // The next bit of code is asynchronously tricky.
+        $timeout(function() {
+          // This code runs after the authentication promise has been rejected.
+          // Go to the log-in page
+          $state.go('home')
+        })
+        // Reject the authentication promise to prevent the state from loading
+        return $q.reject()
+      }
+	 }
+	},
+	 function(toastrConfig) {
+	  angular.extend(toastrConfig, {
+		autoDismiss: false,
+		containerId: 'toast-container',
+		maxOpened: 0,    
+		newestOnTop: true,
+		positionClass: 'toast-bottom-right',
+		preventDuplicates: false,
+		preventOpenDuplicates: false,
+		target: 'body'
+	  });
+	}
+);
 app.directive('modal', function () {
 		return {
 				restrict: 'A',
@@ -141,6 +367,21 @@ app.directive('select2',function() {
 				}
 		};
 });
+app.controller('index',function($scope,$rootScope,$location,$state,toastr){
+	$rootScope.$on('$stateChangeStart', function(event, toState,toStateParams,fromState) {
+		var path=toState.name;
+		var re=/manage\..*/g;
+		if (re.test(path)==true){			
+		//	console.log(toState.name);		
+		//	$location.path(fromState.url).replace();					
+		//	toastr.info("请登录",'Info');
+		//	$scope['_login'].modal('toggle');
+		}
+		$scope.modal_operate=function(type){
+			$scope[type].modal('toggle');
+		}
+    });
+})
 app.controller('homeController', function($scope,$http,toastr,scopeService,$rootScope) {
 	var initial=function(){
 		$scope.input={
@@ -154,26 +395,6 @@ app.controller('homeController', function($scope,$http,toastr,scopeService,$root
 //		$scope.select2card.val("").trigger("change");
 	}
 	initial();
-	$http({
-		method:'post',
-		url:"php/home.php",
-		headers: {
-			'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
-		},
-		transformRequest:function(data){
-			return $.param(data);
-		},
-		data:{
-			'opt':"ini",
-			'data':""
-			}
-	})
-	.then(function successCallback(response) {
-		if (response.data.error!=0){				
-			toastr.error(response.data.error,'错误');
-		}
-		$scope.data =response.data.result;
-	});
 	$scope.getlist=function(value,type){
 			if (type =='card'){
 					if (value != null){
@@ -279,27 +500,7 @@ app.controller('register', function($scope,uiGridConstants,$http,toastr) {
 		  $scope.grid1Api = gridApi;
 		}
 	};
-	$http({
-		method:'post',
-		url:"php/register.php",
-		headers: {
-			'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
-		},
-		transformRequest:function(data){
-			return $.param(data);
-		},
-		data:{
-			'opt':"ini",
-			'data':""
-		}
-	})
-	.then(function successCallback(response) {
-		if (response.data.error!=0){				
-			toastr.error(response.data.error,'错误');
-		}
-		$scope.gridOptions.data =response.data.result;
-		$scope.viplist=response.data.viplist;
-	});
+	$scope.gridOptions.data=$scope.data;
 	$scope.register=function(type){
 		$scope[type].modal('toggle');
 	}
@@ -332,29 +533,7 @@ app.controller('register', function($scope,uiGridConstants,$http,toastr) {
 	}
 })
 app.controller('deposit', function($scope,$http,$filter,toastr) {
-	$http({
-		method:'post',
-		url:"php/deposit.php",
-		headers: {
-			'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
-		},
-		transformRequest:function(data){
-			return $.param(data);
-		},
-		data:{
-			'opt':"ini",
-			'data':'',
-			'index':'',
-		}
-	})
-	.then(function successCallback(response) {
-		$scope.result =response.data.result;
-		$scope.viplist=response.data.viplist;
-		$scope.store=clone($scope.result);
-		if (response.data.error!=0){
-			toastr.error(response.data.error,'错误');
-		}
-	});
+	$scope.store=clone($scope.result);
     $scope.operate=function(operate,value){
 //		console.log(operate);
 		$scope.dataindex=value;
@@ -431,48 +610,9 @@ app.controller('record', function($scope,uiGridConstants,$http,toastr) {
 		  $scope.grid1Api = gridApi;
 		}
 	};
-	$http({
-		method:'post',
-		url:"php/record.php",
-		headers: {
-			'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
-		},
-		transformRequest:function(data){
-			return $.param(data);
-		},
-		data:{
-			'opt':"ini",
-		}
-	})
-	.then(function successCallback(response) {
-		if (response.data.error!=0){				
-			toastr.error(response.data.error,'错误');
-		}
-		$scope.gridOptions.data =response.data.result;
-	});
+	$scope.gridOptions.data=$scope.data;
 })
 app.controller('project', function($scope,$http,toastr) {
-	$http({
-		method:'post',
-		url:"php/project.php",
-		headers: {
-			'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
-		},
-		transformRequest:function(data){
-			return $.param(data);
-		},
-		data:{
-			'opt':"getproject",
-			'data':'',
-			'index':'',
-		}
-	})
-	.then(function successCallback(response) {
-		$scope.result =response.data.result;
-		if (response.data.error!=0){
-			toastr.error(response.data.error,'错误');
-		}
-	});
     $scope.operate=function(operate,value){
 //		console.log(operate);
 		$scope.dataindex=value;
@@ -512,27 +652,6 @@ app.controller('project', function($scope,$http,toastr) {
 	}
 })
 app.controller('mvip', function($scope,$http,toastr) {
-	$http({
-		method:'post',
-		url:"php/mvip.php",
-		headers: {
-			'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
-		},
-		transformRequest:function(data){
-			return $.param(data);
-		},
-		data:{
-			'opt':"getproject",
-			'data':'',
-			'index':'',
-		}
-	})
-	.then(function successCallback(response) {
-		$scope.result =response.data.result;
-		if (response.data.error!=0){
-			toastr.error(response.data.error,'错误');
-		}
-	});
     $scope.operate=function(operate,value){
 //		console.log(operate);
 		$scope.dataindex=value;
@@ -569,28 +688,10 @@ app.controller('mvip', function($scope,$http,toastr) {
 })
 app.controller('free', function($scope,$http,toastr) {
 	$scope.gridOptions = {};
-	$http({
-		method:'post',
-		url:"php/free.php",
-		headers: {
-			'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
-		},
-		transformRequest:function(data){
-			return $.param(data);
-		},
-		data:{
-			'opt':"getproject",
-		}
-	})
-	.then(function successCallback(response) {
-		$scope.gridOptions.data =response.data.result;
-		var array=new Array();
-		array=[{name:'rank',displayName:"会员等级",enableCellEdit: false}];
-		$scope.gridOptions.columnDefs=array.concat(response.data.title);
-		if (response.data.error!=0){
-			toastr.error(response.data.error,'错误');
-		}
-	});
+	var array=new Array();
+	array=[{name:'rank',displayName:"会员等级",enableCellEdit: false}];
+	$scope.gridOptions.columnDefs=array.concat($scope.data.title);
+	$scope.gridOptions.data=$scope.data.result;
     $scope.operate=function(operate,value){
 		$scope[operate].modal('toggle');
 	}
