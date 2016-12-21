@@ -1,6 +1,6 @@
 var app=angular.module('myApp',['ui.router','ngAnimate','ui.grid','ui.grid.edit','toastr']);
 app.run(function($rootScope, $location,$state) {
-
+	$rootScope.authentication=false;
 });
 app.service('scopeService', function() {
      return {
@@ -209,6 +209,7 @@ app.config(
 		cache:false,
 		templateUrl: 'manage/page-free.html',
 		resolve:{
+			authenticate: authenticate,
 			data:function($http){
 				return 	$http({
 					method:'post',
@@ -241,12 +242,16 @@ app.config(
 		url:'/operator',
 		cache:false,
 		templateUrl: 'manage/page-operator.html',
+		resolve:{
+			authenticate: authenticate,
+		}
 	//	controller: 'manageController'
 	},{
 		name:'manage.mvip', 
 		url:'/mvip',
 		templateUrl: 'manage/page-mvip.html',
 		resolve:{
+			authenticate: authenticate,
 			data:function($http){
 				return 	$http({
 					method:'post',
@@ -282,12 +287,18 @@ app.config(
 	},{
 		name:'admin.salary',
 		url:'/salary ',
-		templateUrl: 'admin/admin-salary.html'
+		templateUrl: 'admin/admin-salary.html',
+		resolve:{
+			authenticate: authenticate,
+		}
 
 	},{
 		name:'admin.attendance',
 		url:'/attendance',
 		templateUrl: 'admin/admin-attendance.html',
+		resolve:{
+			authenticate: authenticate,
+		}
 	}];
 	states.forEach(function(state) {
 		$stateProvider.state(state);
@@ -296,7 +307,7 @@ app.config(
 	$httpProvider.interceptors.push('myInterceptor');
 	function authenticate($q,$rootScope, $state, $timeout,toastr) {
 		
-      if (0) {
+      if ($rootScope.authentication) {
         // Resolve the promise successfully
         return $q.when()
       } else {
@@ -328,7 +339,7 @@ app.config(
 app.directive('modal', function () {
 		return {
 				restrict: 'A',
-				link: function($scope,element, attr) {
+				link: function($scope,element, attr,$rootScope) {
 						$scope[attr.modal]=$(element);
 //						console.log($scope.modal);
 				}
@@ -370,12 +381,11 @@ app.directive('select2',function() {
 app.controller('index',function($scope,$rootScope,$location,$state,toastr){
 	$rootScope.$on('$stateChangeStart', function(event, toState,toStateParams,fromState) {
 		var path=toState.name;
-		var re=/manage\..*/g;
-		if (re.test(path)==true){			
-		//	console.log(toState.name);		
-		//	$location.path(fromState.url).replace();					
-		//	toastr.info("请登录",'Info');
-		//	$scope['_login'].modal('toggle');
+		var re=/(manage|admin)\..*/g;
+		if($rootScope.authentication){}else{
+			if (re.test(path)==true){
+			//		$scope['_login'].modal('toggle');	
+			}
 		}
 		$scope.modal_operate=function(type){
 			$scope[type].modal('toggle');
