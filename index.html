@@ -60,18 +60,14 @@
 								</h6>
 						 </div>
 						 <div class="modal-body">
-								<div class="input-group col-md-6">
-									<span class="input-group-addon">用户名:</span>
-									<input type="text" class="form-control" ng-model="modal_login.name" placeholder="用户名" >
-								</div>
 								<div class="input-group col-md-6 ">
 									<span class="input-group-addon">密码:</span>
-									<input type="text" class="form-control" ng-model="modal_login.password" placeholder="密码" >
+									<input type="password" class="form-control" ng-model="modal_login.password" placeholder="密码" >
 								</div>
 						 </div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
-								<button type="button" class="btn btn-primary" ng-click="modal_operate('_login')">
+								<button type="button" class="btn btn-primary" ng-click="modal_operate('_login')" ng-disabled="!modal_login.password">
 									 <span class="ladda-label">确定</span>
 								</button>	
 						 </div>

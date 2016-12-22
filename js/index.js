@@ -30,6 +30,20 @@ app.factory('myInterceptor', ["$rootScope", function ($rootScope) {
  return timestampMarker;  
 }]);
 app.config(
+	 function(toastrConfig) {
+	  angular.extend(toastrConfig, {
+		autoDismiss: false,
+		containerId: 'toast-container',
+		maxOpened: 0,    
+		newestOnTop: true,
+		positionClass: 'toast-bottom-right',
+		preventDuplicates: false,
+		preventOpenDuplicates: false,
+		target: 'body'
+	  });
+	}
+)
+app.config(
 	function($stateProvider,$httpProvider,$urlRouterProvider) {
 	var states=[{
 		name:'home',
@@ -305,8 +319,7 @@ app.config(
 	});
 	$urlRouterProvider.otherwise("home");
 	$httpProvider.interceptors.push('myInterceptor');
-	function authenticate($q,$rootScope, $state, $timeout,toastr) {
-		
+	function authenticate($q,$rootScope, $state, $timeout,toastr) {	
       if ($rootScope.authentication) {
         // Resolve the promise successfully
         return $q.when()
@@ -322,18 +335,6 @@ app.config(
         return $q.reject()
       }
 	 }
-	},
-	 function(toastrConfig) {
-	  angular.extend(toastrConfig, {
-		autoDismiss: false,
-		containerId: 'toast-container',
-		maxOpened: 0,    
-		newestOnTop: true,
-		positionClass: 'toast-bottom-right',
-		preventDuplicates: false,
-		preventOpenDuplicates: false,
-		target: 'body'
-	  });
 	}
 );
 app.directive('modal', function () {
@@ -380,14 +381,25 @@ app.directive('select2',function() {
 });
 app.controller('index',function($scope,$rootScope,$location,$state,toastr){
 	$rootScope.$on('$stateChangeStart', function(event, toState,toStateParams,fromState) {
-		var path=toState.name;
-		var re=/(manage|admin)\..*/g;
-		if($rootScope.authentication){}else{
-			if (re.test(path)==true){
-			//		$scope['_login'].modal('toggle');	
-			}
+		var parentLayer=/^(manage|admin)$/;
+		var childLayer=/(manage|admin)\..*/;		
+		if (parentLayer.test(toState.name)==true){
+			if($rootScope.authentication == false){
+				$scope['_login'].modal('toggle');
+			}					
+		}
+		if (parentLayer.test(toState.name)==false && childLayer.test(toState.name)==false){
+			$rootScope.authentication=false;
 		}
 		$scope.modal_operate=function(type){
+			if ($scope.modal_login.password =="admin"){
+				toastr.info("授权成功",'Info');
+				$rootScope.authentication=true;
+			}else{
+				toastr.info("授权失败",'Info');
+				$rootScope.authentication=false;
+			}
+			$scope.modal_login.password="";
 			$scope[type].modal('toggle');
 		}
     });
